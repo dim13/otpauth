@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 
 	"github.com/dim13/otpauth/migration"
 )
@@ -15,11 +16,15 @@ import (
 func main() {
 	mig := flag.String("link", "", "migration link")
 	flag.Parse()
-	u, err := migration.Convert(*mig)
+	u, err := url.Parse(*mig)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, v := range u {
+	p, err := migration.Convert(u)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range p {
 		fmt.Println(v)
 	}
 }

@@ -3,6 +3,7 @@ package migration
 import (
 	"encoding/base32"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -29,7 +30,8 @@ var (
 	}
 )
 
-func otpauth(op *Payload_OtpParameters) *url.URL {
+// URL of otp parameters
+func (op *Payload_OtpParameters) URL() *url.URL {
 	b := base32.StdEncoding.WithPadding(base32.NoPadding)
 	v := make(url.Values)
 	v.Add("secret", b.EncodeToString(op.Secret))
@@ -51,24 +53,23 @@ func otpauth(op *Payload_OtpParameters) *url.URL {
 	}
 }
 
-func parseData(s string) ([]byte, error) {
-	u, err := url.Parse(s)
-	if err != nil {
-		return nil, err
-	}
+// ErrUnkown flags invalid scheme or host value
+var ErrUnkown = errors.New("unknown")
+
+func dataQuery(u *url.URL) ([]byte, error) {
 	if u.Scheme != "otpauth-migration" {
-		return nil, fmt.Errorf("unknown scheme: %s", u.Scheme)
+		return nil, fmt.Errorf("scheme %s: %w", u.Scheme, ErrUnkown)
 	}
 	if u.Host != "offline" {
-		return nil, fmt.Errorf("unknown host: %s", u.Host)
+		return nil, fmt.Errorf("host %s: %w", u.Host, ErrUnkown)
 	}
 	data := u.Query().Get("data")
 	return base64.StdEncoding.DecodeString(data)
 }
 
-// Convert otpauth-migration to otpauth links
-func Convert(s string) ([]string, error) {
-	data, err := parseData(s)
+// Convert otpauth-migration URL to otpauth URL
+func Convert(u *url.URL) ([]*url.URL, error) {
+	data, err := dataQuery(u)
 	if err != nil {
 		return nil, err
 	}
@@ -76,9 +77,9 @@ func Convert(s string) ([]string, error) {
 	if err := proto.Unmarshal(data, &p); err != nil {
 		return nil, err
 	}
-	var ret []string
+	var ret []*url.URL
 	for _, v := range p.OtpParameters {
-		ret = append(ret, otpauth(v).String())
+		ret = append(ret, v.URL())
 	}
 	return ret, nil
 }
