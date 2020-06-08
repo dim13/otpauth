@@ -6,12 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
 
 	"google.golang.org/protobuf/proto"
 )
 
 //go:generate protoc --go_out=paths=source_relative:. migration.proto
+
+// Errors
+var (
+	ErrUnkown  = errors.New("unknown")
+	ErrInvalid = errors.New("invalid")
+)
 
 var (
 	otpTypes = map[Payload_OtpType]string{
@@ -34,16 +39,23 @@ var (
 func (op *Payload_OtpParameters) URL() *url.URL {
 	b := base32.StdEncoding.WithPadding(base32.NoPadding)
 	v := make(url.Values)
+	// required
 	v.Add("secret", b.EncodeToString(op.Secret))
-	v.Add("issuer", op.Issuer)
+	// strongly recommended
+	if op.Issuer != "" {
+		v.Add("issuer", op.Issuer)
+	}
+	// optional
 	if op.Algorithm != Payload_ALGORITHM_UNSPECIFIED {
 		v.Add("algorithm", algorithms[op.Algorithm])
 	}
+	// optional
 	if op.Digits != Payload_DIGIT_COUNT_UNSPECIFIED {
 		v.Add("digits", digitCounts[op.Digits])
 	}
+	// required if type is totp
 	if op.Counter > 0 {
-		v.Add("counter", strconv.Itoa(int(op.Counter)))
+		v.Add("counter", fmt.Sprint(op.Counter))
 	}
 	return &url.URL{
 		Scheme:   "otpauth",
@@ -52,9 +64,6 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 		RawQuery: v.Encode(),
 	}
 }
-
-// ErrUnkown flags invalid scheme or host value
-var ErrUnkown = errors.New("unknown")
 
 func dataQuery(u *url.URL) ([]byte, error) {
 	if u.Scheme != "otpauth-migration" {
@@ -78,8 +87,15 @@ func Convert(u *url.URL) ([]*url.URL, error) {
 		return nil, err
 	}
 	var ret []*url.URL
-	for _, v := range p.OtpParameters {
-		ret = append(ret, v.URL())
+	for _, op := range p.OtpParameters {
+		// check required fields
+		if len(op.Secret) == 0 {
+			return nil, fmt.Errorf("secret: %w", ErrInvalid)
+		}
+		if op.Type == Payload_OTP_TYPE_HOTP && op.Counter == 0 {
+			return nil, fmt.Errorf("counter: %w", ErrInvalid)
+		}
+		ret = append(ret, op.URL())
 	}
 	return ret, nil
 }
