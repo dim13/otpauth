@@ -53,7 +53,7 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 	if op.Digits != Payload_DIGIT_COUNT_UNSPECIFIED {
 		v.Add("digits", digitCounts[op.Digits])
 	}
-	// required if type is totp
+	// required if type is hotp
 	if op.Counter > 0 {
 		v.Add("counter", fmt.Sprint(op.Counter))
 	}
