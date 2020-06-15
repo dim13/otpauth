@@ -7,8 +7,12 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/binary"
+	"fmt"
 	"hash"
+	"net/url"
 	"time"
+
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -26,7 +30,10 @@ var (
 	}
 )
 
-func (op *Payload_OtpParameters) value(c int64) int {
+// now function for testing purposes
+var now = time.Now
+
+func (op *Payload_OtpParameters) evaluate(c int64) int {
 	h := hmac.New(hashes[op.Algorithm], op.Secret)
 	binary.Write(h, binary.BigEndian, c)
 	hash := h.Sum(nil)
@@ -35,13 +42,29 @@ func (op *Payload_OtpParameters) value(c int64) int {
 	return int(header) % digits[op.Digits]
 }
 
-// Value of OTP
-func (op *Payload_OtpParameters) Value() int {
+// Evaluate OTP parameters
+func (op *Payload_OtpParameters) Evaluate() int {
 	switch op.Type {
 	case Payload_OTP_TYPE_HOTP:
-		return op.value(op.Counter) // TODO increment counter
+		return op.evaluate(op.Counter) // TODO increment counter
 	case Payload_OTP_TYPE_TOTP:
-		return op.value(time.Now().Unix() / 30) // default period 30s
+		return op.evaluate(now().Unix() / 30) // default period 30s
 	}
 	return 0
+}
+
+// Evaluate otpauth-migration URL
+func Evaluate(u *url.URL) error {
+	data, err := dataQuery(u)
+	if err != nil {
+		return err
+	}
+	var p Payload
+	if err := proto.Unmarshal(data, &p); err != nil {
+		return err
+	}
+	for _, op := range p.OtpParameters {
+		fmt.Printf("%s %06d", op.Name, op.Evaluate())
+	}
+	return nil
 }
