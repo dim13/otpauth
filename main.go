@@ -15,6 +15,7 @@ import (
 
 func main() {
 	mig := flag.String("link", "", "migration link")
+	eval := flag.Bool("eval", false, "evaluate otps")
 	flag.Parse()
 	u, err := url.Parse(*mig)
 	if err != nil {
@@ -26,5 +27,8 @@ func main() {
 	}
 	for _, v := range p {
 		fmt.Println(v)
+	}
+	if *eval {
+		migration.Evaluate(u)
 	}
 }

@@ -64,7 +64,7 @@ func Evaluate(u *url.URL) error {
 		return err
 	}
 	for _, op := range p.OtpParameters {
-		fmt.Printf("%s %06d", op.Name, op.Evaluate())
+		fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
 	}
 	return nil
 }

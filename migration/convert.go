@@ -14,8 +14,7 @@ import (
 
 // Errors
 var (
-	ErrUnkown  = errors.New("unknown")
-	ErrInvalid = errors.New("invalid")
+	ErrUnkown = errors.New("unknown")
 )
 
 var (
@@ -54,8 +53,12 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 		v.Add("digits", digitCounts[op.Digits])
 	}
 	// required if type is hotp
-	if op.Counter > 0 {
+	if op.Type == Payload_OTP_TYPE_HOTP {
 		v.Add("counter", fmt.Sprint(op.Counter))
+	}
+	// optional if type is totp
+	if op.Type == Payload_OTP_TYPE_TOTP {
+		v.Add("period", "30") // default value
 	}
 	return &url.URL{
 		Scheme:   "otpauth",
@@ -88,13 +91,6 @@ func Convert(u *url.URL) ([]*url.URL, error) {
 	}
 	var ret []*url.URL
 	for _, op := range p.OtpParameters {
-		// check required fields
-		if len(op.Secret) == 0 {
-			return nil, fmt.Errorf("secret: %w", ErrInvalid)
-		}
-		if op.Type == Payload_OTP_TYPE_HOTP && op.Counter == 0 {
-			return nil, fmt.Errorf("counter: %w", ErrInvalid)
-		}
 		ret = append(ret, op.URL())
 	}
 	return ret, nil
