@@ -8,7 +8,7 @@ import (
 func TestConvert(t *testing.T) {
 	const (
 		migration = "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
-		want      = "otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP"
+		want      = "otpauth://totp/Example:alice@google.com?issuer=Example&period=30&secret=JBSWY3DPEHPK3PXP"
 	)
 	u, err := url.Parse(migration)
 	if err != nil {

@@ -11,5 +11,5 @@ func ExampleEvaluate() {
 	u, _ := url.Parse("otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC")
 	Evaluate(u)
 	// Output:
-	// Example:alice@google.com 528064
+	// 528064 Example:alice@google.com
 }
