@@ -28,29 +28,27 @@ var (
 		Payload_DIGIT_COUNT_SIX:         1e6,
 		Payload_DIGIT_COUNT_EIGHT:       1e8,
 	}
+	counter = map[Payload_OtpType]func(*Payload_OtpParameters) int64{
+		Payload_OTP_TYPE_UNSPECIFIED: otpTOTP, // default
+		Payload_OTP_TYPE_HOTP:        otpHOTP,
+		Payload_OTP_TYPE_TOTP:        otpTOTP,
+	}
 )
 
 // now function for testing purposes
 var now = time.Now
 
-func (op *Payload_OtpParameters) evaluate(c int64) int {
+func otpHOTP(op *Payload_OtpParameters) int64 { return op.Counter }
+func otpTOTP(op *Payload_OtpParameters) int64 { return now().Unix() / 30 }
+
+// Evaluate OTP parameters
+func (op *Payload_OtpParameters) Evaluate() int {
 	h := hmac.New(hashes[op.Algorithm], op.Secret)
-	binary.Write(h, binary.BigEndian, c)
+	binary.Write(h, binary.BigEndian, counter[op.Type](op))
 	hash := h.Sum(nil)
 	off := hash[h.Size()-1] & 15
 	header := binary.BigEndian.Uint32(hash[off:]) & (1<<31 - 1)
 	return int(header) % digits[op.Digits]
-}
-
-// Evaluate OTP parameters
-func (op *Payload_OtpParameters) Evaluate() int {
-	switch op.Type {
-	case Payload_OTP_TYPE_HOTP:
-		return op.evaluate(op.Counter) // TODO increment counter
-	case Payload_OTP_TYPE_TOTP:
-		return op.evaluate(now().Unix() / 30) // default period 30s
-	}
-	return 0
 }
 
 // Evaluate otpauth-migration URL
