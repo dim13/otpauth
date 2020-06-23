@@ -18,17 +18,17 @@ var (
 )
 
 var (
-	otpTypes = map[Payload_OtpType]string{
+	typeString = map[Payload_OtpType]string{
 		Payload_OTP_TYPE_HOTP: "hotp",
 		Payload_OTP_TYPE_TOTP: "totp",
 	}
-	algorithms = map[Payload_Algorithm]string{
+	algString = map[Payload_Algorithm]string{
 		Payload_ALGORITHM_SHA1:   "SHA1",
 		Payload_ALGORITHM_SHA256: "SHA256",
 		Payload_ALGORITHM_SHA512: "SHA512",
 		Payload_ALGORITHM_MD5:    "MD5",
 	}
-	digitCounts = map[Payload_DigitCount]string{
+	digitsString = map[Payload_DigitCount]string{
 		Payload_DIGIT_COUNT_SIX:   "6",
 		Payload_DIGIT_COUNT_EIGHT: "8",
 	}
@@ -46,11 +46,11 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 	}
 	// optional
 	if op.Algorithm != Payload_ALGORITHM_UNSPECIFIED {
-		v.Add("algorithm", algorithms[op.Algorithm])
+		v.Add("algorithm", algString[op.Algorithm])
 	}
 	// optional
 	if op.Digits != Payload_DIGIT_COUNT_UNSPECIFIED {
-		v.Add("digits", digitCounts[op.Digits])
+		v.Add("digits", digitsString[op.Digits])
 	}
 	// required if type is hotp
 	if op.Type == Payload_OTP_TYPE_HOTP {
@@ -62,7 +62,7 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 	}
 	return &url.URL{
 		Scheme:   "otpauth",
-		Host:     otpTypes[op.Type],
+		Host:     typeString[op.Type],
 		Path:     op.Name,
 		RawQuery: v.Encode(),
 	}
