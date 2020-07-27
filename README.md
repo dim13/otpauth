@@ -6,8 +6,18 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 
 ## Usage
 
-Navigate to Menu -> Transfer accounts -> Export accounts
-and extract the link from QR-code using your preferred software.
+* Navigate to ⋮ → Transfer accounts → Export accounts.
+* Extract migration link from QR-code using your preferred software.
+* Pass link to `otpauth` tool.
+
+### Flags
+
+```
+  -eval
+        evaluate otps
+  -link string
+        migration link
+```
 
 ## Example
 
