@@ -21,14 +21,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	p, err := migration.Convert(u)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, v := range p {
-		fmt.Println(v)
-	}
 	if *eval {
 		migration.Evaluate(u)
+	} else {
+		p, err := migration.Convert(u)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, v := range p {
+			fmt.Println(v)
+		}
 	}
 }
