@@ -22,7 +22,10 @@ func main() {
 		log.Fatal(err)
 	}
 	if *eval {
-		migration.Evaluate(u)
+		err = migration.Evaluate(u)
+		if err != nil {
+			log.Fatal(err)
+		}
 	} else {
 		p, err := migration.Convert(u)
 		if err != nil {
