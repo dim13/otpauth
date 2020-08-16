@@ -14,14 +14,14 @@ func TestConvert(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := Convert(u)
+	p, err := Unmarshal(u)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(got) < 1 {
-		t.Fatalf("got lengh %v, want 1", len(got))
+	if len(p.OtpParameters) < 1 {
+		t.Fatalf("got lengh %v, want 1", len(p.OtpParameters))
 	}
-	if got[0].String() != want {
-		t.Errorf("got %v, want %v", got[0].String(), want)
+	if p.OtpParameters[0].URL().String() != want {
+		t.Errorf("got %v, want %v", p.OtpParameters[0].URL(), want)
 	}
 }

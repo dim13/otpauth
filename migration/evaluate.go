@@ -7,12 +7,8 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/binary"
-	"fmt"
 	"hash"
-	"net/url"
 	"time"
-
-	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -49,20 +45,4 @@ func (op *Payload_OtpParameters) Evaluate() int {
 	offset := hashed[h.Size()-1] & 15
 	result := binary.BigEndian.Uint32(hashed[offset:]) & (1<<31 - 1)
 	return int(result) % digitCount[op.Digits]
-}
-
-// Evaluate otpauth-migration URL
-func Evaluate(u *url.URL) error {
-	data, err := dataQuery(u)
-	if err != nil {
-		return err
-	}
-	var p Payload
-	if err := proto.Unmarshal(data, &p); err != nil {
-		return err
-	}
-	for _, op := range p.OtpParameters {
-		fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
-	}
-	return nil
 }

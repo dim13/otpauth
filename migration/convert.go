@@ -2,12 +2,9 @@ package migration
 
 import (
 	"encoding/base32"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"net/url"
-
-	"google.golang.org/protobuf/proto"
 )
 
 //go:generate protoc --go_out=paths=source_relative:. migration.proto
@@ -66,32 +63,4 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 		Path:     op.Name,
 		RawQuery: v.Encode(),
 	}
-}
-
-func dataQuery(u *url.URL) ([]byte, error) {
-	if u.Scheme != "otpauth-migration" {
-		return nil, fmt.Errorf("scheme %s: %w", u.Scheme, ErrUnkown)
-	}
-	if u.Host != "offline" {
-		return nil, fmt.Errorf("host %s: %w", u.Host, ErrUnkown)
-	}
-	data := u.Query().Get("data")
-	return base64.StdEncoding.DecodeString(data)
-}
-
-// Convert otpauth-migration URL to otpauth URL
-func Convert(u *url.URL) ([]*url.URL, error) {
-	data, err := dataQuery(u)
-	if err != nil {
-		return nil, err
-	}
-	var p Payload
-	if err := proto.Unmarshal(data, &p); err != nil {
-		return nil, err
-	}
-	var ret []*url.URL
-	for _, op := range p.OtpParameters {
-		ret = append(ret, op.URL())
-	}
-	return ret, nil
 }
