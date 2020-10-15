@@ -7,8 +7,6 @@ import (
 	"net/url"
 )
 
-//go:generate protoc --go_out=paths=source_relative:. migration.proto
-
 // Errors
 var (
 	ErrUnkown = errors.New("unknown")
