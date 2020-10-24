@@ -23,5 +23,10 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 
     go get github.com/dim13/otpauth
     otpauth -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
+    
     # Output:
     otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
+    
+    # Output with QR code:
+    otpauth -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC" -qr
+    # view and scan qr_1.png at current work dir

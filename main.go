@@ -7,6 +7,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/skip2/go-qrcode"
 	"log"
 	"net/url"
 
@@ -16,6 +17,7 @@ import (
 func main() {
 	link := flag.String("link", "", "migration link (required)")
 	eval := flag.Bool("eval", false, "evaluate otps")
+	qr := flag.Bool("qr", false, "qrcode generate otps")
 	flag.Parse()
 
 	u, err := url.Parse(*link)
@@ -28,11 +30,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, op := range p.OtpParameters {
+	for idx, op := range p.OtpParameters {
 		if *eval {
 			fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
 		} else {
-			fmt.Println(op.URL())
+			res := op.URL().String()
+			fmt.Println(res)
+			if *qr {
+				fn :=fmt.Sprintf("qr_%d.png", idx)
+				if err := qrcode.WriteFile(res, qrcode.Medium, 256, fn); err != nil {
+					log.Fatal(err)
+				}
+			}
 		}
+	}
+	if *qr {
+		fmt.Println("Don't forgot delete qr_*.png from disk finally.")
 	}
 }
