@@ -7,17 +7,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/skip2/go-qrcode"
 	"log"
 	"net/url"
 
 	"github.com/dim13/otpauth/migration"
+	"github.com/skip2/go-qrcode"
 )
 
 func main() {
 	link := flag.String("link", "", "migration link (required)")
 	eval := flag.Bool("eval", false, "evaluate otps")
-	qr := flag.Bool("qr", false, "qrcode generate otps")
+	qr := flag.Bool("qr", false, "generate QR-codes")
 	flag.Parse()
 
 	u, err := url.Parse(*link)
@@ -30,21 +30,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for idx, op := range p.OtpParameters {
-		if *eval {
+	for _, op := range p.OtpParameters {
+		switch {
+		case *eval:
 			fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
-		} else {
-			res := op.URL().String()
-			fmt.Println(res)
-			if *qr {
-				fn :=fmt.Sprintf("qr_%d.png", idx)
-				if err := qrcode.WriteFile(res, qrcode.Medium, 256, fn); err != nil {
-					log.Fatal(err)
-				}
+		case *qr:
+			fname := op.Name + ".png"
+			fmt.Println("write", fname)
+			err := qrcode.WriteFile(op.URL().String(), qrcode.Medium, 256, fname)
+			if err != nil {
+				log.Fatal(err)
 			}
+		default:
+			fmt.Println(op.URL())
 		}
-	}
-	if *qr {
-		fmt.Println("Don't forgot delete qr_*.png from disk finally.")
 	}
 }
