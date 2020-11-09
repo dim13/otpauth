@@ -25,17 +25,23 @@ var (
 		Payload_DIGIT_COUNT_EIGHT:       1e8,
 	}
 	countFunc = map[Payload_OtpType]func(*Payload_OtpParameters) int64{
-		Payload_OTP_TYPE_UNSPECIFIED: otpTOTP, // default
-		Payload_OTP_TYPE_HOTP:        otpHOTP,
-		Payload_OTP_TYPE_TOTP:        otpTOTP,
+		Payload_OTP_TYPE_UNSPECIFIED: totp, // default
+		Payload_OTP_TYPE_HOTP:        hotp,
+		Payload_OTP_TYPE_TOTP:        totp,
 	}
 )
 
 // now function for testing purposes
 var now = time.Now
 
-func otpHOTP(op *Payload_OtpParameters) int64 { return op.Counter }
-func otpTOTP(op *Payload_OtpParameters) int64 { return now().Unix() / 30 }
+func hotp(op *Payload_OtpParameters) int64 {
+	op.Counter++ // pre-increment rfc4226 section 7.2.
+	return op.Counter
+}
+
+func totp(op *Payload_OtpParameters) int64 {
+	return now().Unix() / 30
+}
 
 // Evaluate OTP parameters
 func (op *Payload_OtpParameters) Evaluate() int {
