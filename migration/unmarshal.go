@@ -2,11 +2,15 @@ package migration
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/url"
 
 	"google.golang.org/protobuf/proto"
 )
+
+// ErrUnkown scheme or host
+var ErrUnkown = errors.New("unknown")
 
 func unmarshal(u *url.URL) ([]byte, error) {
 	if u.Scheme != "otpauth-migration" {

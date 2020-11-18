@@ -2,14 +2,8 @@ package migration
 
 import (
 	"encoding/base32"
-	"errors"
 	"fmt"
 	"net/url"
-)
-
-// Errors
-var (
-	ErrUnkown = errors.New("unknown")
 )
 
 var (
