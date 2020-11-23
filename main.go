@@ -30,12 +30,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, op := range p.OtpParameters {
+	for i, op := range p.OtpParameters {
 		switch {
 		case *eval:
 			fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
 		case *qr:
-			fname := op.Name + ".png"
+			fname := fmt.Sprintf("%d_%s.png", i+1, op.CleanName())
 			fmt.Println("write", fname)
 			err := qrcode.WriteFile(op.URL().String(), qrcode.Medium, 256, fname)
 			if err != nil {
