@@ -1,20 +1,15 @@
 package migration
 
 import (
-	"net/url"
 	"testing"
 )
 
 func TestConvert(t *testing.T) {
 	const (
-		migration = "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
-		want      = "otpauth://totp/Example:alice@google.com?issuer=Example&period=30&secret=JBSWY3DPEHPK3PXP"
+		testData = "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
+		want     = "otpauth://totp/Example:alice@google.com?issuer=Example&period=30&secret=JBSWY3DPEHPK3PXP"
 	)
-	u, err := url.Parse(migration)
-	if err != nil {
-		t.Fatal(err)
-	}
-	p, err := Unmarshal(u)
+	p, err := UnmarshalURL(testData)
 	if err != nil {
 		t.Fatal(err)
 	}

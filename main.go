@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/url"
 
 	"github.com/dim13/otpauth/migration"
 	"github.com/skip2/go-qrcode"
@@ -20,12 +19,7 @@ func main() {
 	qr := flag.Bool("qr", false, "generate QR-codes")
 	flag.Parse()
 
-	u, err := url.Parse(*link)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	p, err := migration.Unmarshal(u)
+	p, err := migration.UnmarshalURL(*link)
 	if err != nil {
 		log.Fatal(err)
 	}

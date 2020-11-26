@@ -1,7 +1,6 @@
 package migration
 
 import (
-	"net/url"
 	"testing"
 	"time"
 )
@@ -9,11 +8,8 @@ import (
 func TestEvaluate(t *testing.T) {
 	// fake time
 	now = func() time.Time { return time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC) }
-	u, err := url.Parse("otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC")
-	if err != nil {
-		t.Fatal(err)
-	}
-	p, err := Unmarshal(u)
+	const testData = "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
+	p, err := UnmarshalURL(testData)
 	if err != nil {
 		t.Fatal(err)
 	}

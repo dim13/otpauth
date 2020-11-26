@@ -12,7 +12,12 @@ import (
 // ErrUnkown scheme or host
 var ErrUnkown = errors.New("unknown")
 
-func unmarshal(u *url.URL) ([]byte, error) {
+// Data extracts data part from URL string
+func Data(link string) ([]byte, error) {
+	u, err := url.Parse(link)
+	if err != nil {
+		return nil, err
+	}
 	if u.Scheme != "otpauth-migration" {
 		return nil, fmt.Errorf("scheme %s: %w", u.Scheme, ErrUnkown)
 	}
@@ -23,15 +28,20 @@ func unmarshal(u *url.URL) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(data)
 }
 
-// Unmarshal otpauth-migration URL
-func Unmarshal(u *url.URL) (*Payload, error) {
-	data, err := unmarshal(u)
-	if err != nil {
-		return nil, err
-	}
+// Unmarshal otpauth-migration data
+func Unmarshal(data []byte) (*Payload, error) {
 	var p Payload
 	if err := proto.Unmarshal(data, &p); err != nil {
 		return nil, err
 	}
 	return &p, nil
+}
+
+// Unmarshal otpauth-migration from URL string
+func UnmarshalURL(link string) (*Payload, error) {
+	data, err := Data(link)
+	if err != nil {
+		return nil, err
+	}
+	return Unmarshal(data)
 }
