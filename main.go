@@ -25,22 +25,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, op := range p.OtpParameters {
-		switch {
-		case *eval:
-			fmt.Printf("%06d %s\n", op.Evaluate(time.Now()), op.Name)
-		case *qr:
-			if err := op.WriteFile(); err != nil {
-				log.Fatal(err)
-			}
-		default:
-			fmt.Println(op.URL())
-		}
-	}
-
 	if *http != "" {
 		if err := serve(*http, p); err != nil {
 			log.Fatal(err)
+		}
+	} else {
+		for _, op := range p.OtpParameters {
+			switch {
+			case *eval:
+				fmt.Printf("%06d %s\n", op.Evaluate(time.Now()), op.Name)
+			case *qr:
+				if err := op.WriteFile(); err != nil {
+					log.Fatal(err)
+				}
+			default:
+				fmt.Println(op.URL())
+			}
 		}
 	}
 }
