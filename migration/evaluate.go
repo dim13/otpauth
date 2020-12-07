@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/binary"
+	"fmt"
 	"hash"
 	"time"
 )
@@ -24,31 +25,40 @@ var (
 		Payload_DIGIT_COUNT_SIX:         1e6,
 		Payload_DIGIT_COUNT_EIGHT:       1e8,
 	}
-	countFunc = map[Payload_OtpType]func(*Payload_OtpParameters) int64{
+	countFunc = map[Payload_OtpType]func(*Payload_OtpParameters, time.Time) int64{
 		Payload_OTP_TYPE_UNSPECIFIED: totp, // default
 		Payload_OTP_TYPE_HOTP:        hotp,
 		Payload_OTP_TYPE_TOTP:        totp,
 	}
+	fmtWidth = map[Payload_DigitCount]int{
+		Payload_DIGIT_COUNT_UNSPECIFIED: 6, // default
+		Payload_DIGIT_COUNT_SIX:         6,
+		Payload_DIGIT_COUNT_EIGHT:       8,
+	}
 )
 
-// now function for testing purposes
-var now = time.Now
-
-func hotp(op *Payload_OtpParameters) int64 {
+func hotp(op *Payload_OtpParameters, now time.Time) int64 {
 	op.Counter++ // pre-increment rfc4226 section 7.2.
 	return op.Counter
 }
 
-func totp(op *Payload_OtpParameters) int64 {
-	return now().Unix() / 30
+func totp(op *Payload_OtpParameters, now time.Time) int64 {
+	return now.Unix() / 30
 }
 
 // Evaluate OTP parameters
-func (op *Payload_OtpParameters) Evaluate() int {
+func (op *Payload_OtpParameters) Evaluate(now time.Time) int {
 	h := hmac.New(hashFunc[op.Algorithm], op.Secret)
-	binary.Write(h, binary.BigEndian, countFunc[op.Type](op))
+	binary.Write(h, binary.BigEndian, countFunc[op.Type](op, now))
 	hashed := h.Sum(nil)
 	offset := hashed[h.Size()-1] & 15
 	result := binary.BigEndian.Uint32(hashed[offset:]) & (1<<31 - 1)
 	return int(result) % digitCount[op.Digits]
+}
+
+// offset 5 seconds into future
+const offset = time.Second * 5
+
+func (op *Payload_OtpParameters) EvaluateString() string {
+	return fmt.Sprintf("%0*d", fmtWidth[op.Digits], op.Evaluate(time.Now().Add(offset)))
 }
