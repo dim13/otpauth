@@ -23,7 +23,6 @@ const tmpl = `<!DOCTYPE html>
 	}
 	.code {
 		color: #e76c1a;
-		float: right;
 	}
 	.caption {
 		color: #2f3795;
@@ -41,15 +40,20 @@ const tmpl = `<!DOCTYPE html>
 	var events = new EventSource("/events");
 	events.addEventListener("data", function(e) {
 		var data = JSON.parse(e.data);
-		document.getElementById(data.ID).innerHTML = data.Code;
+		var code = document.getElementById(data.ID).getElementsByClassName('code')[0];
+		var time = document.getElementById(data.ID).getElementsByClassName('time')[0];
+		code.innerHTML = data.Code;
+		time.value = data.Time;
 	});
 </script>
 </header>
 <body>
 {{range .OtpParameters}}
-<section>
-	<h4>{{.Title}} <span id="{{.UUID}}" class="code">{{.EvaluateString}}</span></h4>
+<section id="{{.UUID}}">
+	<h4>{{.Title}}<h4>
 	<figure><img src="{{.UUID}}.png" alt="{{.URL}}"></figure>
+	<label class="code">{{.EvaluateString}}</label>
+	<progress class="time" max="30"></progress>
 </section>
 {{end}}
 </body>
@@ -59,6 +63,7 @@ const tmpl = `<!DOCTYPE html>
 type Code struct {
 	ID   uuid.UUID
 	Code string
+	Time float64
 }
 
 func serve(addr string, p *migration.Payload) error {
@@ -82,13 +87,14 @@ func serve(addr string, p *migration.Payload) error {
 	http.Handle("/events", events)
 	go func() {
 		enc := json.NewEncoder(events)
-		t := time.NewTicker(time.Second)
+		t := time.NewTicker(time.Second / 2)
 		defer t.Stop()
 		for range t.C {
 			for _, op := range p.OtpParameters {
 				enc.Encode(Code{
 					ID:   op.UUID(),
 					Code: op.EvaluateString(),
+					Time: op.Second(),
 				})
 			}
 		}

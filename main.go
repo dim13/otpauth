@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/dim13/otpauth/migration"
 )
@@ -33,7 +32,7 @@ func main() {
 		for _, op := range p.OtpParameters {
 			switch {
 			case *eval:
-				fmt.Printf("%06d %s\n", op.Evaluate(time.Now()), op.Name)
+				fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
 			case *qr:
 				if err := op.WriteFile(); err != nil {
 					log.Fatal(err)
