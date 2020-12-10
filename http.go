@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dim13/otpauth/migration"
-	"github.com/dim13/otpauth/sse"
+	"github.com/dim13/sse"
 	"github.com/google/uuid"
 )
 
@@ -83,7 +83,7 @@ func serve(addr string, p *migration.Payload) error {
 	for _, op := range p.OtpParameters {
 		http.Handle("/"+op.UUID().String()+".png", op)
 	}
-	events := sse.NewBroker("data", 100)
+	events := sse.New("data", 100)
 	http.Handle("/events", events)
 	go func() {
 		enc := json.NewEncoder(events)
