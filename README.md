@@ -15,6 +15,8 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 ```
   -eval
     	evaluate otps
+  -http string
+	serve http (e.g. localhost:6060)
   -link string
     	migration link (required)
   -qr
@@ -29,8 +31,17 @@ otpauth -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6
 
 # Output:
 otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
+```
 
-# Output with QR code:
+### QR-Codes
+
+```
 otpauth -qr -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
 # view and scan *.png in current working directory
 ```
+
+### Serve http
+```
+otpauth -http=localhost:6060 -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
+```
+Navigate to http://localhost:6060/

@@ -10,13 +10,13 @@ import (
 	"log"
 
 	"github.com/dim13/otpauth/migration"
-	"github.com/skip2/go-qrcode"
 )
 
 func main() {
 	link := flag.String("link", "", "migration link (required)")
 	eval := flag.Bool("eval", false, "evaluate otps")
 	qr := flag.Bool("qr", false, "generate QR-codes")
+	http := flag.String("http", "", "serve http (e.g. localhost:6060)")
 	flag.Parse()
 
 	p, err := migration.UnmarshalURL(*link)
@@ -24,19 +24,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for i, op := range p.OtpParameters {
-		switch {
-		case *eval:
-			fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
-		case *qr:
-			fname := fmt.Sprintf("%d_%s.png", i+1, op.CleanName())
-			fmt.Println("write", fname)
-			err := qrcode.WriteFile(op.URL().String(), qrcode.Medium, 256, fname)
-			if err != nil {
-				log.Fatal(err)
+	if *http != "" {
+		if err := serve(*http, p); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		for _, op := range p.OtpParameters {
+			switch {
+			case *eval:
+				fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
+			case *qr:
+				if err := op.WriteFile(); err != nil {
+					log.Fatal(err)
+				}
+			default:
+				fmt.Println(op.URL())
 			}
-		default:
-			fmt.Println(op.URL())
 		}
 	}
 }

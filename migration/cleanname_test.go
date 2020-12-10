@@ -2,7 +2,7 @@ package migration
 
 import "testing"
 
-func TestCleanName(t *testing.T) {
+func TestFileName(t *testing.T) {
 	testCases := []struct {
 		op   *Payload_OtpParameters
 		want string
@@ -14,7 +14,7 @@ func TestCleanName(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.op.Name, func(t *testing.T) {
-			got := tc.op.CleanName()
+			got := tc.op.FileName()
 			if got != tc.want {
 				t.Errorf("got %v; want %v", got, tc.want)
 			}
