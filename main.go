@@ -24,22 +24,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if *http != "" {
+	switch {
+	case *http != "":
 		if err := serve(*http, p); err != nil {
 			log.Fatal(err)
 		}
-	} else {
+	case *qr:
 		for _, op := range p.OtpParameters {
-			switch {
-			case *eval:
-				fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
-			case *qr:
-				if err := op.WriteFile(); err != nil {
-					log.Fatal(err)
-				}
-			default:
-				fmt.Println(op.URL())
+			if err := op.WriteFile(op.FileName() + ".png"); err != nil {
+				log.Fatal(err)
 			}
+		}
+	case *eval:
+		for _, op := range p.OtpParameters {
+			fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
+		}
+	default:
+		for _, op := range p.OtpParameters {
+			fmt.Println(op.URL())
 		}
 	}
 }
