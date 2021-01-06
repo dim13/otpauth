@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"encoding/json"
 	"html/template"
 	"log"
@@ -13,52 +14,8 @@ import (
 	"github.com/google/uuid"
 )
 
-const tmpl = `<!DOCTYPE html>
-<html>
-<header>
-<style>
-	body {
-		font-family: 'Go', sans-serif;
-		color: #0f0e09;
-	}
-	.code {
-		color: #e76c1a;
-	}
-	.caption {
-		color: #2f3795;
-	}
-	section {
-		float: left;
-		background-color: #e5e8f1;
-		border: thick solid #847a73;
-		border-radius: 1ex;
-		margin: 1ex;
-		padding: 1ex;
-	}
-</style>
-<script>
-	var events = new EventSource("/events");
-	events.addEventListener("otp", function(e) {
-		var otp = JSON.parse(e.data);
-		var code = document.getElementById(otp.id).getElementsByClassName('code')[0];
-		var time = document.getElementById(otp.id).getElementsByClassName('time')[0];
-		code.innerHTML = otp.code;
-		time.value = otp.time;
-	});
-</script>
-</header>
-<body>
-{{range .OtpParameters}}
-<section id="{{.UUID}}">
-	<h4>{{.Title}}<h4>
-	<figure><img src="{{.UUID}}.png" alt="{{.URL}}"></figure>
-	<label class="code">{{.EvaluateString}}</label>
-	<progress class="time" max="30"></progress>
-</section>
-{{end}}
-</body>
-</html>
-`
+//go:embed index.tmpl
+var tmpl string
 
 type otp struct {
 	ID   uuid.UUID `json:"id"`
