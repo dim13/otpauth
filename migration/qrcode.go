@@ -6,10 +6,12 @@ import (
 	"github.com/skip2/go-qrcode"
 )
 
+// QR image bytes as PNG
 func (op *Payload_OtpParameters) QR() ([]byte, error) {
 	return qrcode.Encode(op.URL().String(), qrcode.Medium, 256)
 }
 
+// WriteFile writes QR code as PNG to specified file
 func (op *Payload_OtpParameters) WriteFile(fname string) error {
 	pic, err := op.QR()
 	if err != nil {

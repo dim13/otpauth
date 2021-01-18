@@ -54,6 +54,7 @@ func totp(op *Payload_OtpParameters) int64 {
 	return now().Unix() / period
 }
 
+// Second of current validity frame
 func (op *Payload_OtpParameters) Second() float64 {
 	return now().Sub(now().Truncate(time.Second * period)).Seconds()
 }
@@ -68,6 +69,7 @@ func (op *Payload_OtpParameters) Evaluate() int {
 	return int(result) % digitCount[op.Digits]
 }
 
+// EvaluateString returns OTP as formatted string
 func (op *Payload_OtpParameters) EvaluateString() string {
 	return fmt.Sprintf("%0*d", fmtWidth[op.Digits], op.Evaluate())
 }

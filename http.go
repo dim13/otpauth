@@ -38,12 +38,12 @@ const tmpl = `<!DOCTYPE html>
 </style>
 <script>
 	var events = new EventSource("/events");
-	events.addEventListener("data", function(e) {
-		var data = JSON.parse(e.data);
-		var code = document.getElementById(data.ID).getElementsByClassName('code')[0];
-		var time = document.getElementById(data.ID).getElementsByClassName('time')[0];
-		code.innerHTML = data.Code;
-		time.value = data.Time;
+	events.addEventListener("otp", function(e) {
+		var otp = JSON.parse(e.data);
+		var code = document.getElementById(otp.id).getElementsByClassName('code')[0];
+		var time = document.getElementById(otp.id).getElementsByClassName('time')[0];
+		code.innerHTML = otp.code;
+		time.value = otp.time;
 	});
 </script>
 </header>
@@ -60,10 +60,10 @@ const tmpl = `<!DOCTYPE html>
 </html>
 `
 
-type Code struct {
-	ID   uuid.UUID
-	Code string
-	Time float64
+type otp struct {
+	ID   uuid.UUID `json:"id"`
+	Code string    `json:"code"`
+	Time float64   `json:"time"`
 }
 
 func serve(addr string, p *migration.Payload) error {
@@ -83,7 +83,7 @@ func serve(addr string, p *migration.Payload) error {
 	for _, op := range p.OtpParameters {
 		http.Handle("/"+op.UUID().String()+".png", op)
 	}
-	events := sse.New("data", 100)
+	events := sse.New("otp", 100)
 	http.Handle("/events", events)
 	go func() {
 		enc := json.NewEncoder(events)
@@ -91,7 +91,7 @@ func serve(addr string, p *migration.Payload) error {
 		defer t.Stop()
 		for range t.C {
 			for _, op := range p.OtpParameters {
-				enc.Encode(Code{
+				enc.Encode(otp{
 					ID:   op.UUID(),
 					Code: op.EvaluateString(),
 					Time: op.Second(),

@@ -37,7 +37,7 @@ func Unmarshal(data []byte) (*Payload, error) {
 	return &p, nil
 }
 
-// Unmarshal otpauth-migration from URL string
+// UnmarshalURL decodes otpauth-migration from URL
 func UnmarshalURL(link string) (*Payload, error) {
 	data, err := Data(link)
 	if err != nil {
