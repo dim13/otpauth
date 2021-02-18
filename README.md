@@ -25,6 +25,8 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 
 ## Example
 
+NOTE: Go 1.16 required
+
 ```
 go get github.com/dim13/otpauth
 ~/go/bin/otpauth -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
