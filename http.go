@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "embed"
+	"embed"
 	"encoding/json"
 	"html/template"
 	"log"
@@ -14,8 +14,8 @@ import (
 	"github.com/google/uuid"
 )
 
-//go:embed index.tmpl
-var tmpl string
+//go:embed static
+var static embed.FS
 
 type otp struct {
 	ID   uuid.UUID `json:"id"`
@@ -30,18 +30,21 @@ func serve(addr string, p *migration.Payload) error {
 	}
 	defer l.Close()
 	log.Println("listen on", l.Addr())
-	t, err := template.New("index").Parse(tmpl)
+	t, err := template.ParseFS(static, "static/index.tmpl")
 	if err != nil {
 		return err
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		t.Execute(w, p)
+		if err := t.Execute(w, p); err != nil {
+			log.Println("execute template:", err)
+		}
 	})
 	for _, op := range p.OtpParameters {
 		http.Handle("/"+op.UUID().String()+".png", op)
 	}
 	events := sse.New("otp", 100)
 	http.Handle("/events", events)
+	http.Handle("/static/", http.FileServer(http.FS(static)))
 	go func() {
 		enc := json.NewEncoder(events)
 		t := time.NewTicker(time.Second / 2)

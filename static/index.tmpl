@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<header>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>OTPAuth</title>
+	<link rel="stylesheet" href="static/style.css">
+	<script src="static/events.js" defer></script>
+</header>
+<body>{{range .OtpParameters}}
+	<section id="{{.UUID}}">
+		<h4>{{.Title}}<h4>
+		<figure><img src="{{.UUID}}.png" alt="{{.URL}}"></figure>
+		<label class="code">{{.EvaluateString}}</label>
+		<progress class="time" max="30"></progress>
+	</section>{{end}}
+</body>
+</html>
