@@ -1,9 +1,10 @@
 #!/bin/sh
 set -ex
+VERSION=`git describe --abbrev=0 --tags`
 dist() {
 	export GOOS=${1%/*} GOARCH=${1#*/}
 	go build
-	tar zcvf .github/otpauth-$GOOS-$GOARCH.tgz LICENSE README.md otpauth*
+	tar zcvf .github/otpauth-$VERSION-$GOOS-$GOARCH.tgz LICENSE README.md otpauth*
 	go clean
 }
 # see `go tool dist list` for possible target values
