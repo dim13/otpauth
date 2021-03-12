@@ -14,7 +14,7 @@ func (op *Payload_OtpParameters) FileName() string {
 			return '_'
 		}
 		return r
-	}, op.Name)
+	}, op.Name + "_" + op.Issuer)
 }
 
 // UUID of OTP parameter
