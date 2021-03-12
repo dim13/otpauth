@@ -7,9 +7,27 @@ func TestFileName(t *testing.T) {
 		op   *Payload_OtpParameters
 		want string
 	}{
-		{&Payload_OtpParameters{Name: "Test"}, "Test"},
-		{&Payload_OtpParameters{Name: "A/B:C.d"}, "A_B:C.d"},
-		{&Payload_OtpParameters{Name: "A/../B:C.d"}, "A_.._B:C.d"},
+		{
+			op: &Payload_OtpParameters{
+				Name:   "Test",
+				Issuer: "Issuer",
+			},
+			want: "Test_Issuer",
+		},
+		{
+			op: &Payload_OtpParameters{
+				Name:   "A/B:C.d",
+				Issuer: "Issuer",
+			},
+			want: "A_B:C.d_Issuer",
+		},
+		{
+			op: &Payload_OtpParameters{
+				Name:   "A/../B:C.d",
+				Issuer: "Issuer",
+			},
+			want: "A_.._B:C.d_Issuer",
+		},
 	}
 
 	for _, tc := range testCases {
