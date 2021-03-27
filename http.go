@@ -3,14 +3,13 @@ package main
 import (
 	"embed"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
-	"net"
 	"net/http"
 	"time"
 
 	"github.com/dim13/otpauth/migration"
-	"github.com/dim13/sse"
 	"github.com/google/uuid"
 )
 
@@ -23,41 +22,58 @@ type otp struct {
 	Time float64   `json:"time"`
 }
 
-func serve(addr string, p *migration.Payload) error {
-	l, err := net.Listen("tcp", addr)
-	if err != nil {
-		return err
+func eventStream(event string, p *migration.Payload) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "not a flusher", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Connection", "keep-alive")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		t := time.NewTicker(time.Second)
+		defer t.Stop()
+		for range t.C {
+			select {
+			case <-r.Context().Done():
+				return
+			default:
+				for _, op := range p.OtpParameters {
+					b, _ := json.Marshal(otp{
+						ID:   op.UUID(),
+						Code: op.EvaluateString(),
+						Time: op.Second(),
+					})
+					fmt.Fprintf(w, "event: %s\r\n", event)
+					fmt.Fprintf(w, "data: %s\r\n\r\n", string(b))
+				}
+				flusher.Flush()
+			}
+		}
 	}
-	defer l.Close()
-	log.Println("listen on", l.Addr())
+}
+
+func indexHandler(t *template.Template, p *migration.Payload) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := t.Execute(w, p); err != nil {
+			log.Println("execute template:", err)
+		}
+	}
+}
+
+func serve(addr string, p *migration.Payload) error {
 	t, err := template.ParseFS(static, "static/index.tmpl")
 	if err != nil {
 		return err
 	}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if err := t.Execute(w, p); err != nil {
-			log.Println("execute template:", err)
-		}
-	})
+	http.Handle("/", indexHandler(t, p))
 	for _, op := range p.OtpParameters {
 		http.Handle("/"+op.UUID().String()+".png", op)
 	}
-	events := sse.New("otp", 100)
-	http.Handle("/events", events)
+	http.Handle("/events", eventStream("otp", p))
 	http.Handle("/static/", http.FileServer(http.FS(static)))
-	go func() {
-		enc := json.NewEncoder(events)
-		t := time.NewTicker(time.Second / 2)
-		defer t.Stop()
-		for range t.C {
-			for _, op := range p.OtpParameters {
-				enc.Encode(otp{
-					ID:   op.UUID(),
-					Code: op.EvaluateString(),
-					Time: op.Second(),
-				})
-			}
-		}
-	}()
-	return http.Serve(l, nil)
+	log.Println("listen on", addr)
+	return http.ListenAndServe(addr, nil)
 }
