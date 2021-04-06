@@ -20,3 +20,11 @@ func TestConvert(t *testing.T) {
 		t.Errorf("got %v, want %v", p.OtpParameters[0].URL(), want)
 	}
 }
+
+func TestStdBase64(t *testing.T) {
+	testData := "otpauth-migration://offline?data=CjsKFBHMQnKu/odWlB/zUy+dfiRIaHj0EhhFeGFtcGxlOmFsaWNlQGdvb2dsZS5jb20aB0V4YW1wbGUwAg=="
+	_, err := UnmarshalURL(testData)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

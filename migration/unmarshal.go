@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -25,6 +26,8 @@ func Data(link string) ([]byte, error) {
 		return nil, fmt.Errorf("host %s: %w", u.Host, ErrUnkown)
 	}
 	data := u.Query().Get("data")
+	// fix spaces back to plus sign
+	data = strings.ReplaceAll(data, " ", "+")
 	return base64.StdEncoding.DecodeString(data)
 }
 
