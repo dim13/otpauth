@@ -37,13 +37,12 @@ var (
 	}
 )
 
-// offset 5 seconds into future
 const (
-	offset = 5  // seconds
-	period = 30 // seconds
+	offset = 5 * time.Second  // offset into future
+	period = 30 * time.Second // default value period
 )
 
-var now = func() time.Time { return time.Now().Add(time.Second * offset) }
+var now = func() time.Time { return time.Now().Add(offset) }
 
 func hotp(op *Payload_OtpParameters) int64 {
 	op.Counter++ // pre-increment rfc4226 section 7.2.
@@ -51,12 +50,12 @@ func hotp(op *Payload_OtpParameters) int64 {
 }
 
 func totp(op *Payload_OtpParameters) int64 {
-	return now().Unix() / period
+	return now().Unix() / int64(period.Seconds())
 }
 
 // Second of current validity frame
 func (op *Payload_OtpParameters) Second() float64 {
-	return now().Sub(now().Truncate(time.Second * period)).Seconds()
+	return now().Sub(now().Truncate(period)).Seconds()
 }
 
 // Evaluate OTP parameters
