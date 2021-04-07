@@ -1,17 +1,10 @@
 body {
-	font-family: 'Go', sans-serif;
-	color: #0f0e09;
-}
-.code {
-	color: #e76c1a;
-}
-.caption {
-	color: #2f3795;
+	font-family: 'IBM Plex Sans', sans-serif;
+	display: flex;
+	flex-wrap: wrap;
 }
 section {
-	float: left;
-	background-color: #e5e8f1;
-	border: thick solid #847a73;
+	border: thin solid currentColor;
 	border-radius: 1ex;
 	margin: 1ex;
 	padding: 1ex;

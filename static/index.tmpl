@@ -9,10 +9,10 @@
 </header>
 <body>{{range .OtpParameters}}
 	<section id="{{.UUID}}">
-		<h4>{{.Title}}<h4>
-		<figure><img src="{{.UUID}}.png" alt="{{.URL}}"></figure>
+		<h4>{{.Title}}</h4>
 		<label class="code">{{.EvaluateString}}</label>
 		<progress class="time" max="30"></progress>
+		<figure><img src="{{.UUID}}.png" alt="{{.URL}}"></figure>
 	</section>{{end}}
 </body>
 </html>

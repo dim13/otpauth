@@ -8,7 +8,7 @@ import (
 
 // QR image bytes as PNG
 func (op *Payload_OtpParameters) QR() ([]byte, error) {
-	return qrcode.Encode(op.URL().String(), qrcode.Medium, 256)
+	return qrcode.Encode(op.URL().String(), qrcode.Medium, -3)
 }
 
 // WriteFile writes QR code as PNG to specified file
