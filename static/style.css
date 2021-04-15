@@ -3,6 +3,10 @@ body {
 	display: flex;
 	flex-wrap: wrap;
 }
+pre {
+	font-family: 'IBM Plex Mono', monospace;
+	text-align: center;
+}
 section {
 	border: thin solid currentColor;
 	border-radius: 1ex;

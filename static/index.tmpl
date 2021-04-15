@@ -14,6 +14,9 @@
 		<label class="code">{{.EvaluateString}}</label>
 		<progress class="time" max="30"></progress>
 		<figure><img src="{{.UUID}}.png" alt="{{.URL}}"></figure>
+<pre>
+{{range .SecretTuples}}{{range .}}{{.}} {{end}}
+{{end}}</pre>
 	</section>{{end}}
 </body>
 </html>

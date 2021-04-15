@@ -23,12 +23,28 @@ var (
 	}
 )
 
+func (op *Payload_OtpParameters) SecretString() string {
+	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(op.Secret)
+}
+
+func (op *Payload_OtpParameters) SecretTuples() [][]string {
+	secret := op.SecretString()
+	tuples := make([]string, len(secret)/4)
+	for i := range tuples {
+		tuples[i] = secret[4*i : 4*i+4]
+	}
+	rows := make([][]string, len(tuples)/4)
+	for i := range rows {
+		rows[i] = tuples[4*i : 4*i+4]
+	}
+	return rows
+}
+
 // URL of otp parameters
 func (op *Payload_OtpParameters) URL() *url.URL {
-	b := base32.StdEncoding.WithPadding(base32.NoPadding)
 	v := make(url.Values)
 	// required
-	v.Add("secret", b.EncodeToString(op.Secret))
+	v.Add("secret", op.SecretString())
 	// strongly recommended
 	if op.Issuer != "" {
 		v.Add("issuer", op.Issuer)
