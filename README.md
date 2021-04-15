@@ -13,10 +13,12 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 ### Flags
 
 ```
+  -cache string
+    	cache file (default "migration.bin")
   -eval
     	evaluate otps
   -http string
-	serve http (e.g. localhost:6060)
+    	serve http (e.g. localhost:6060)
   -link string
     	migration link (required)
   -qr
@@ -30,8 +32,11 @@ NOTE: Go 1.16 required
 ```
 go get github.com/dim13/otpauth
 ~/go/bin/otpauth -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
+```
 
-# Output:
+Will output:
+
+```
 otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
 ```
 
@@ -42,8 +47,13 @@ otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
 # view and scan *.png in current working directory
 ```
 
+Will generate:
+
+![Example](example.png)
+
 ### Serve http
 ```
 ~/go/bin/otpauth -http=localhost:6060 -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
 ```
+
 Navigate to http://localhost:6060/
