@@ -29,6 +29,10 @@ func (op *Payload_OtpParameters) SecretString() string {
 
 func (op *Payload_OtpParameters) SecretTuples() [][]string {
 	secret := op.SecretString()
+	// pad secret to multiple of 4×4
+	for i := 0; i < len(secret)%16; i++ {
+		secret += "    "
+	}
 	tuples := make([]string, len(secret)/4)
 	for i := range tuples {
 		tuples[i] = secret[4*i : 4*i+4]
