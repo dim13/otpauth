@@ -27,7 +27,7 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 
 ## Example
 
-NOTE: Go 1.16 required
+**NOTE**: at least [Go](https://golang.org/dl/) 1.16 required, or use latest binary [release](https://github.com/dim13/otpauth/releases/latest).
 
 ```
 go get github.com/dim13/otpauth
