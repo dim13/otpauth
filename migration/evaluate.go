@@ -25,7 +25,7 @@ var (
 		Payload_DIGIT_COUNT_SIX:         1e6,
 		Payload_DIGIT_COUNT_EIGHT:       1e8,
 	}
-	countFunc = map[Payload_OtpType]func(*Payload_OtpParameters) int64{
+	countFunc = map[Payload_OtpType]func(*Payload_OtpParameters) uint64{
 		Payload_OTP_TYPE_UNSPECIFIED: totp, // default
 		Payload_OTP_TYPE_HOTP:        hotp,
 		Payload_OTP_TYPE_TOTP:        totp,
@@ -44,13 +44,13 @@ const (
 
 var now = func() time.Time { return time.Now().Add(offset) }
 
-func hotp(op *Payload_OtpParameters) int64 {
+func hotp(op *Payload_OtpParameters) uint64 {
 	op.Counter++ // pre-increment rfc4226 section 7.2.
 	return op.Counter
 }
 
-func totp(op *Payload_OtpParameters) int64 {
-	return now().Unix() / int64(period.Seconds())
+func totp(op *Payload_OtpParameters) uint64 {
+	return uint64(now().Unix()) / uint64(period.Seconds())
 }
 
 // Second of current validity frame

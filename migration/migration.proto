@@ -27,7 +27,7 @@ message Payload {
     Algorithm algorithm = 4;
     DigitCount digits = 5;
     OtpType type = 6;
-    int64 counter = 7;
+    uint64 counter = 7;
   }
   repeated OtpParameters otp_parameters = 1;
   uint32 version = 2;
