@@ -19,6 +19,8 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
     	evaluate otps
   -http string
     	serve http (e.g. localhost:6060)
+  -info
+    	display batch info
   -link string
     	migration link (required)
   -qr

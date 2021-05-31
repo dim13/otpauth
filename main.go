@@ -32,6 +32,7 @@ func main() {
 	eval := flag.Bool("eval", false, "evaluate otps")
 	qr := flag.Bool("qr", false, "generate QR-codes")
 	http := flag.String("http", "", "serve http (e.g. localhost:6060)")
+	info := flag.Bool("info", false, "display batch info")
 	flag.Parse()
 
 	data, err := migrationData(*cache, *link)
@@ -59,6 +60,11 @@ func main() {
 		for _, op := range p.OtpParameters {
 			fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
 		}
+	case *info:
+		fmt.Println("version", p.Version)
+		fmt.Println("batch size", p.BatchSize)
+		fmt.Println("batch index", p.BatchIndex)
+		fmt.Println("batch id", p.BatchId)
 	default:
 		for _, op := range p.OtpParameters {
 			fmt.Println(op.URL())
