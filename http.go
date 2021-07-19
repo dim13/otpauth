@@ -64,7 +64,7 @@ func indexHandler(t *template.Template, p *migration.Payload) http.HandlerFunc {
 }
 
 func serve(addr string, p *migration.Payload) error {
-	t, err := template.ParseFS(static, "static/index.tmpl")
+	t, err := template.ParseFS(static, "static/index.html")
 	if err != nil {
 		return err
 	}
