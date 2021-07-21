@@ -10,7 +10,7 @@ import (
 // FileName returns sanitized filename without path delimiters
 func (op *Payload_OtpParameters) FileName() string {
 	return strings.Map(func(r rune) rune {
-		if r == filepath.Separator {
+		if r == filepath.Separator || r == filepath.PathListSeparator {
 			return '_'
 		}
 		return r
