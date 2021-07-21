@@ -1,7 +1,7 @@
 package migration
 
 import (
-	"path/filepath"
+	"os"
 	"strings"
 
 	"github.com/google/uuid"
@@ -10,11 +10,13 @@ import (
 // FileName returns sanitized filename without path delimiters
 func (op *Payload_OtpParameters) FileName() string {
 	return strings.Map(func(r rune) rune {
-		if r == filepath.Separator || r == filepath.PathListSeparator {
+		switch r {
+		case os.PathSeparator, os.PathListSeparator:
 			return '_'
+		default:
+			return r
 		}
-		return r
-	}, op.Name + "_" + op.Issuer)
+	}, op.Name+"_"+op.Issuer)
 }
 
 // UUID of OTP parameter

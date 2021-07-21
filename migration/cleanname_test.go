@@ -19,14 +19,14 @@ func TestFileName(t *testing.T) {
 				Name:   "A/B:C.d",
 				Issuer: "Issuer",
 			},
-			want: "A_B:C.d_Issuer",
+			want: "A_B_C.d_Issuer",
 		},
 		{
 			op: &Payload_OtpParameters{
 				Name:   "A/../B:C.d",
 				Issuer: "Issuer",
 			},
-			want: "A_.._B:C.d_Issuer",
+			want: "A_.._B_C.d_Issuer",
 		},
 	}
 
