@@ -1,6 +1,6 @@
 # Google Authenticator migration decoder
 
-![Logo](otpauth.png)
+![Logo](images/otpauth.png)
 
 Convert [Google Authenticator](https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2) `otpauth-migration://offline?data=...`
 [transfer links](https://github.com/google/google-authenticator-android/issues/118)
@@ -53,7 +53,7 @@ otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
 
 Will generate:
 
-![Example](example.png)
+![Example](images/example.png)
 
 ### Serve http
 ```
