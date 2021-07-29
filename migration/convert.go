@@ -27,7 +27,7 @@ func (op *Payload_OtpParameters) SecretString() string {
 	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(op.Secret)
 }
 
-func (op *Payload_OtpParameters) SecretTuples() [][]string {
+func (op *Payload_OtpParameters) SecretTuples() []string {
 	secret := op.SecretString()
 	// pad secret to multiple of 4×4
 	for i := 0; i < len(secret)%16; i++ {
@@ -37,11 +37,7 @@ func (op *Payload_OtpParameters) SecretTuples() [][]string {
 	for i := range tuples {
 		tuples[i] = secret[4*i : 4*i+4]
 	}
-	rows := make([][]string, len(tuples)/4)
-	for i := range rows {
-		rows[i] = tuples[4*i : 4*i+4]
-	}
-	return rows
+	return tuples
 }
 
 // URL of otp parameters

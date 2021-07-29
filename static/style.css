@@ -5,9 +5,10 @@ body {
 }
 pre {
 	font-family: 'IBM Plex Mono', monospace;
-	text-align: center;
+	white-space: pre-wrap;
 }
 section {
+	max-width: 25%;
 	border: thin solid currentColor;
 	border-radius: 1ex;
 	margin: 1ex;
