@@ -27,12 +27,14 @@ func migrationData(fname, link string) ([]byte, error) {
 }
 
 func main() {
-	link := flag.String("link", "", "migration link (required)")
-	cache := flag.String("cache", "migration.bin", "cache file")
-	eval := flag.Bool("eval", false, "evaluate otps")
-	qr := flag.Bool("qr", false, "generate QR-codes")
-	http := flag.String("http", "", "serve http (e.g. localhost:6060)")
-	info := flag.Bool("info", false, "display batch info")
+	var (
+		link  = flag.String("link", "", "migration link (required)")
+		cache = flag.String("cache", "migration.bin", "cache file")
+		http  = flag.String("http", "", "serve http (e.g. localhost:6060)")
+		eval  = flag.Bool("eval", false, "evaluate otps")
+		qr    = flag.Bool("qr", false, "generate QR-codes")
+		info  = flag.Bool("info", false, "display batch info")
+	)
 	flag.Parse()
 
 	data, err := migrationData(*cache, *link)
