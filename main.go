@@ -39,23 +39,23 @@ func main() {
 
 	data, err := migrationData(*cache, *link)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("-link parameter or cache file missing: ", err)
 	}
 
 	p, err := migration.Unmarshal(data)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("decode data: ", err)
 	}
 
 	switch {
 	case *http != "":
 		if err := serve(*http, p); err != nil {
-			log.Fatal(err)
+			log.Fatal("serve http: ", err)
 		}
 	case *qr:
 		for _, op := range p.OtpParameters {
 			if err := op.WriteFile(op.FileName() + ".png"); err != nil {
-				log.Fatal(err)
+				log.Fatal("write file: ", err)
 			}
 		}
 	case *eval:
