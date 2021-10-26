@@ -10,8 +10,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ErrUnkown scheme or host
-var ErrUnkown = errors.New("unknown")
+// ErrUnknown scheme or host
+var ErrUnknown = errors.New("unknown")
 
 // Data extracts data part from URL string
 func Data(link string) ([]byte, error) {
@@ -20,10 +20,10 @@ func Data(link string) ([]byte, error) {
 		return nil, err
 	}
 	if u.Scheme != "otpauth-migration" {
-		return nil, fmt.Errorf("scheme %s: %w", u.Scheme, ErrUnkown)
+		return nil, fmt.Errorf("scheme %s: %w", u.Scheme, ErrUnknown)
 	}
 	if u.Host != "offline" {
-		return nil, fmt.Errorf("host %s: %w", u.Host, ErrUnkown)
+		return nil, fmt.Errorf("host %s: %w", u.Host, ErrUnknown)
 	}
 	data := u.Query().Get("data")
 	// fix spaces back to plus sign
