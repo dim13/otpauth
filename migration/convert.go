@@ -23,10 +23,12 @@ var (
 	}
 )
 
+// SecretString returns Secret as a base32 encoded String
 func (op *Payload_OtpParameters) SecretString() string {
 	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(op.Secret)
 }
 
+// SecretTuples returns Secret as a base32 string splitted into tuples of 4
 func (op *Payload_OtpParameters) SecretTuples() []string {
 	secret := op.SecretString()
 	// pad secret to multiple of 4×4
