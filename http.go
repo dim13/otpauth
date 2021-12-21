@@ -44,7 +44,7 @@ func eventStream(event string, p *migration.Payload) http.HandlerFunc {
 					b, _ := json.Marshal(otp{
 						ID:   op.UUID(),
 						Code: op.EvaluateString(),
-						Time: op.Second(),
+						Time: op.Seconds(),
 					})
 					fmt.Fprintf(w, "event: %s\r\n", event)
 					fmt.Fprintf(w, "data: %s\r\n\r\n", string(b))

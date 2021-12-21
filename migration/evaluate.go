@@ -53,8 +53,8 @@ func totp(op *Payload_OtpParameters) uint64 {
 	return uint64(now().Unix()) / uint64(period.Seconds())
 }
 
-// Second of current validity frame
-func (op *Payload_OtpParameters) Second() float64 {
+// Seconds of current validity frame
+func (op *Payload_OtpParameters) Seconds() float64 {
 	return now().Sub(now().Truncate(period)).Seconds()
 }
 
