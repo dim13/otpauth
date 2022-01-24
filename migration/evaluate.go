@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hash"
+	"math"
 	"time"
 )
 
@@ -21,19 +22,14 @@ var (
 		Payload_ALGORITHM_MD5:         md5.New,
 	}
 	digitCount = map[Payload_DigitCount]int{
-		Payload_DIGIT_COUNT_UNSPECIFIED: 1e6, // default
-		Payload_DIGIT_COUNT_SIX:         1e6,
-		Payload_DIGIT_COUNT_EIGHT:       1e8,
+		Payload_DIGIT_COUNT_UNSPECIFIED: 6, // default
+		Payload_DIGIT_COUNT_SIX:         6,
+		Payload_DIGIT_COUNT_EIGHT:       8,
 	}
 	countFunc = map[Payload_OtpType]func(*Payload_OtpParameters) uint64{
 		Payload_OTP_TYPE_UNSPECIFIED: totp, // default
 		Payload_OTP_TYPE_HOTP:        hotp,
 		Payload_OTP_TYPE_TOTP:        totp,
-	}
-	fmtWidth = map[Payload_DigitCount]int{
-		Payload_DIGIT_COUNT_UNSPECIFIED: 6, // default
-		Payload_DIGIT_COUNT_SIX:         6,
-		Payload_DIGIT_COUNT_EIGHT:       8,
 	}
 )
 
@@ -65,10 +61,10 @@ func (op *Payload_OtpParameters) Evaluate() int {
 	hashed := h.Sum(nil)
 	offset := hashed[h.Size()-1] & 15
 	result := binary.BigEndian.Uint32(hashed[offset:]) & (1<<31 - 1)
-	return int(result) % digitCount[op.Digits]
+	return int(result) % int(math.Pow10(digitCount[op.Digits]))
 }
 
 // EvaluateString returns OTP as formatted string
 func (op *Payload_OtpParameters) EvaluateString() string {
-	return fmt.Sprintf("%0*d", fmtWidth[op.Digits], op.Evaluate())
+	return fmt.Sprintf("%0*d", digitCount[op.Digits], op.Evaluate())
 }
