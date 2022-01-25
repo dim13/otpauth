@@ -1,8 +1,8 @@
 package migration
 
 import (
-	"os"
 	"strings"
+	"unicode"
 
 	"github.com/google/uuid"
 )
@@ -10,12 +10,10 @@ import (
 // FileName returns sanitized filename without path delimiters
 func (op *Payload_OtpParameters) FileName() string {
 	return strings.Map(func(r rune) rune {
-		switch r {
-		case os.PathSeparator, os.PathListSeparator:
-			return '_'
-		default:
+		if unicode.IsLetter(r) || unicode.IsNumber(r) {
 			return r
 		}
+		return '_'
 	}, op.Name+"_"+op.Issuer)
 }
 
