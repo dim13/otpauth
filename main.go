@@ -1,7 +1,6 @@
 // Google Authenticator migration decoder
 //
 // convert "otpauth-migration" links to plain "otpauth" links
-//
 package main
 
 import (
@@ -32,7 +31,8 @@ func main() {
 		cache = flag.String("cache", "migration.bin", "cache file")
 		http  = flag.String("http", "", "serve http (e.g. localhost:6060)")
 		eval  = flag.Bool("eval", false, "evaluate otps")
-		qr    = flag.Bool("qr", false, "generate QR-codes")
+		qr    = flag.Bool("qr", false, "generate QR-codes (optauth://)")
+		rev   = flag.Bool("rev", false, "reverse QR-code (otpauth-migration://)")
 		info  = flag.Bool("info", false, "display batch info")
 	)
 	flag.Parse()
@@ -54,9 +54,13 @@ func main() {
 		}
 	case *qr:
 		for _, op := range p.OtpParameters {
-			if err := op.WriteFile(op.FileName() + ".png"); err != nil {
+			if err := migration.PNG(op.FileName()+".png", op.URL()); err != nil {
 				log.Fatal("write file: ", err)
 			}
+		}
+	case *rev:
+		if err := migration.PNG("otpauth-migration.png", migration.URL(data)); err != nil {
+			log.Fatal(err)
 		}
 	case *eval:
 		for _, op := range p.OtpParameters {
