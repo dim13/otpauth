@@ -31,6 +31,16 @@ func Data(link string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(data)
 }
 
+func URL(data []byte) *url.URL {
+	v := make(url.Values)
+	v.Add("data", base64.StdEncoding.EncodeToString(data))
+	return &url.URL{
+		Scheme:   "otpauth-migration",
+		Host:     "offline",
+		RawQuery: v.Encode(),
+	}
+}
+
 // Unmarshal otpauth-migration data
 func Unmarshal(data []byte) (*Payload, error) {
 	var p Payload

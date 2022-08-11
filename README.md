@@ -26,7 +26,9 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
   -link string
     	migration link (required)
   -qr
-    	generate QR-codes
+    	generate QR-codes (optauth://)
+  -rev
+    	reverse QR-code (otpauth-migration://)
 ```
 
 ## Example
