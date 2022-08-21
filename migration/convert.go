@@ -7,19 +7,19 @@ import (
 )
 
 var (
-	typeString = map[Payload_OtpType]string{
-		Payload_OTP_TYPE_HOTP: "hotp",
-		Payload_OTP_TYPE_TOTP: "totp",
+	typeString = map[Payload_OtpParameters_OtpType]string{
+		Payload_OtpParameters_OTP_TYPE_HOTP: "hotp",
+		Payload_OtpParameters_OTP_TYPE_TOTP: "totp",
 	}
-	algString = map[Payload_Algorithm]string{
-		Payload_ALGORITHM_SHA1:   "SHA1",
-		Payload_ALGORITHM_SHA256: "SHA256",
-		Payload_ALGORITHM_SHA512: "SHA512",
-		Payload_ALGORITHM_MD5:    "MD5",
+	algString = map[Payload_OtpParameters_Algorithm]string{
+		Payload_OtpParameters_ALGORITHM_SHA1:   "SHA1",
+		Payload_OtpParameters_ALGORITHM_SHA256: "SHA256",
+		Payload_OtpParameters_ALGORITHM_SHA512: "SHA512",
+		Payload_OtpParameters_ALGORITHM_MD5:    "MD5",
 	}
-	digitsString = map[Payload_DigitCount]string{
-		Payload_DIGIT_COUNT_SIX:   "6",
-		Payload_DIGIT_COUNT_EIGHT: "8",
+	digitsString = map[Payload_OtpParameters_DigitCount]string{
+		Payload_OtpParameters_DIGIT_COUNT_SIX:   "6",
+		Payload_OtpParameters_DIGIT_COUNT_EIGHT: "8",
 	}
 )
 
@@ -49,19 +49,19 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 		v.Add("issuer", op.Issuer)
 	}
 	// optional
-	if op.Algorithm != Payload_ALGORITHM_UNSPECIFIED {
+	if op.Algorithm != Payload_OtpParameters_ALGORITHM_UNSPECIFIED {
 		v.Add("algorithm", algString[op.Algorithm])
 	}
 	// optional
-	if op.Digits != Payload_DIGIT_COUNT_UNSPECIFIED {
+	if op.Digits != Payload_OtpParameters_DIGIT_COUNT_UNSPECIFIED {
 		v.Add("digits", digitsString[op.Digits])
 	}
 	// required if type is hotp
-	if op.Type == Payload_OTP_TYPE_HOTP {
+	if op.Type == Payload_OtpParameters_OTP_TYPE_HOTP {
 		v.Add("counter", fmt.Sprint(op.Counter))
 	}
 	// optional if type is totp
-	if op.Type == Payload_OTP_TYPE_TOTP {
+	if op.Type == Payload_OtpParameters_OTP_TYPE_TOTP {
 		v.Add("period", "30") // default value
 	}
 	return &url.URL{

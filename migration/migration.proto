@@ -4,24 +4,24 @@ package migration;
 option go_package = "github.com/dim13/otpauth/migration";
 
 message Payload {
-  enum Algorithm {
-    ALGORITHM_UNSPECIFIED = 0;
-    ALGORITHM_SHA1 = 1;
-    ALGORITHM_SHA256 = 2;
-    ALGORITHM_SHA512 = 3;
-    ALGORITHM_MD5 = 4;
-  }
-  enum DigitCount {
-    DIGIT_COUNT_UNSPECIFIED = 0;
-    DIGIT_COUNT_SIX = 1;
-    DIGIT_COUNT_EIGHT = 2;
-  }
-  enum OtpType {
-    OTP_TYPE_UNSPECIFIED = 0;
-    OTP_TYPE_HOTP = 1;
-    OTP_TYPE_TOTP = 2;
-  }
   message OtpParameters {
+    enum Algorithm {
+      ALGORITHM_UNSPECIFIED = 0;
+      ALGORITHM_SHA1 = 1;
+      ALGORITHM_SHA256 = 2;
+      ALGORITHM_SHA512 = 3;
+      ALGORITHM_MD5 = 4;
+    }
+    enum DigitCount {
+      DIGIT_COUNT_UNSPECIFIED = 0;
+      DIGIT_COUNT_SIX = 1;
+      DIGIT_COUNT_EIGHT = 2;
+    }
+    enum OtpType {
+      OTP_TYPE_UNSPECIFIED = 0;
+      OTP_TYPE_HOTP = 1;
+      OTP_TYPE_TOTP = 2;
+    }
     bytes secret = 1;
     string name = 2;
     string issuer = 3;

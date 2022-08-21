@@ -14,22 +14,22 @@ import (
 )
 
 var (
-	hashFunc = map[Payload_Algorithm]func() hash.Hash{
-		Payload_ALGORITHM_UNSPECIFIED: sha1.New, // default
-		Payload_ALGORITHM_SHA1:        sha1.New,
-		Payload_ALGORITHM_SHA256:      sha256.New,
-		Payload_ALGORITHM_SHA512:      sha512.New,
-		Payload_ALGORITHM_MD5:         md5.New,
+	hashFunc = map[Payload_OtpParameters_Algorithm]func() hash.Hash{
+		Payload_OtpParameters_ALGORITHM_UNSPECIFIED: sha1.New, // default
+		Payload_OtpParameters_ALGORITHM_SHA1:        sha1.New,
+		Payload_OtpParameters_ALGORITHM_SHA256:      sha256.New,
+		Payload_OtpParameters_ALGORITHM_SHA512:      sha512.New,
+		Payload_OtpParameters_ALGORITHM_MD5:         md5.New,
 	}
-	digitCount = map[Payload_DigitCount]int{
-		Payload_DIGIT_COUNT_UNSPECIFIED: 6, // default
-		Payload_DIGIT_COUNT_SIX:         6,
-		Payload_DIGIT_COUNT_EIGHT:       8,
+	digitCount = map[Payload_OtpParameters_DigitCount]int{
+		Payload_OtpParameters_DIGIT_COUNT_UNSPECIFIED: 6, // default
+		Payload_OtpParameters_DIGIT_COUNT_SIX:         6,
+		Payload_OtpParameters_DIGIT_COUNT_EIGHT:       8,
 	}
-	countFunc = map[Payload_OtpType]func(*Payload_OtpParameters) uint64{
-		Payload_OTP_TYPE_UNSPECIFIED: totp, // default
-		Payload_OTP_TYPE_HOTP:        hotp,
-		Payload_OTP_TYPE_TOTP:        totp,
+	countFunc = map[Payload_OtpParameters_OtpType]func(*Payload_OtpParameters) uint64{
+		Payload_OtpParameters_OTP_TYPE_UNSPECIFIED: totp, // default
+		Payload_OtpParameters_OTP_TYPE_HOTP:        hotp,
+		Payload_OtpParameters_OTP_TYPE_TOTP:        totp,
 	}
 )
 
