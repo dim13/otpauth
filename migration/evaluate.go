@@ -2,35 +2,10 @@ package migration
 
 import (
 	"crypto/hmac"
-	"crypto/md5"
-	"crypto/sha1"
-	"crypto/sha256"
-	"crypto/sha512"
 	"encoding/binary"
 	"fmt"
-	"hash"
 	"math"
 	"time"
-)
-
-var (
-	hashFunc = map[Payload_OtpParameters_Algorithm]func() hash.Hash{
-		Payload_OtpParameters_ALGORITHM_UNSPECIFIED: sha1.New, // default
-		Payload_OtpParameters_ALGORITHM_SHA1:        sha1.New,
-		Payload_OtpParameters_ALGORITHM_SHA256:      sha256.New,
-		Payload_OtpParameters_ALGORITHM_SHA512:      sha512.New,
-		Payload_OtpParameters_ALGORITHM_MD5:         md5.New,
-	}
-	digitCount = map[Payload_OtpParameters_DigitCount]int{
-		Payload_OtpParameters_DIGIT_COUNT_UNSPECIFIED: 6, // default
-		Payload_OtpParameters_DIGIT_COUNT_SIX:         6,
-		Payload_OtpParameters_DIGIT_COUNT_EIGHT:       8,
-	}
-	countFunc = map[Payload_OtpParameters_OtpType]func(*Payload_OtpParameters) uint64{
-		Payload_OtpParameters_OTP_TYPE_UNSPECIFIED: totp, // default
-		Payload_OtpParameters_OTP_TYPE_HOTP:        hotp,
-		Payload_OtpParameters_OTP_TYPE_TOTP:        totp,
-	}
 )
 
 const (
@@ -56,15 +31,15 @@ func (op *Payload_OtpParameters) Seconds() float64 {
 
 // Evaluate OTP parameters
 func (op *Payload_OtpParameters) Evaluate() int {
-	h := hmac.New(hashFunc[op.Algorithm], op.Secret)
-	binary.Write(h, binary.BigEndian, countFunc[op.Type](op))
+	h := hmac.New(op.Algorithm.Hash(), op.Secret)
+	binary.Write(h, binary.BigEndian, op.Type.Count(op))
 	hashed := h.Sum(nil)
 	offset := hashed[h.Size()-1] & 15
 	result := binary.BigEndian.Uint32(hashed[offset:]) & (1<<31 - 1)
-	return int(result) % int(math.Pow10(digitCount[op.Digits]))
+	return int(result) % int(math.Pow10(op.Digits.Count()))
 }
 
 // EvaluateString returns OTP as formatted string
 func (op *Payload_OtpParameters) EvaluateString() string {
-	return fmt.Sprintf("%0*d", digitCount[op.Digits], op.Evaluate())
+	return fmt.Sprintf("%0*d", op.Digits.Count(), op.Evaluate())
 }

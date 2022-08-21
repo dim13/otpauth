@@ -6,23 +6,6 @@ import (
 	"net/url"
 )
 
-var (
-	typeString = map[Payload_OtpParameters_OtpType]string{
-		Payload_OtpParameters_OTP_TYPE_HOTP: "hotp",
-		Payload_OtpParameters_OTP_TYPE_TOTP: "totp",
-	}
-	algString = map[Payload_OtpParameters_Algorithm]string{
-		Payload_OtpParameters_ALGORITHM_SHA1:   "SHA1",
-		Payload_OtpParameters_ALGORITHM_SHA256: "SHA256",
-		Payload_OtpParameters_ALGORITHM_SHA512: "SHA512",
-		Payload_OtpParameters_ALGORITHM_MD5:    "MD5",
-	}
-	digitsString = map[Payload_OtpParameters_DigitCount]string{
-		Payload_OtpParameters_DIGIT_COUNT_SIX:   "6",
-		Payload_OtpParameters_DIGIT_COUNT_EIGHT: "8",
-	}
-)
-
 // SecretString returns Secret as a base32 encoded String
 func (op *Payload_OtpParameters) SecretString() string {
 	return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(op.Secret)
@@ -50,11 +33,11 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 	}
 	// optional
 	if op.Algorithm != Payload_OtpParameters_ALGORITHM_UNSPECIFIED {
-		v.Add("algorithm", algString[op.Algorithm])
+		v.Add("algorithm", op.Algorithm.Name())
 	}
 	// optional
 	if op.Digits != Payload_OtpParameters_DIGIT_COUNT_UNSPECIFIED {
-		v.Add("digits", digitsString[op.Digits])
+		v.Add("digits", fmt.Sprint(op.Digits.Count()))
 	}
 	// required if type is hotp
 	if op.Type == Payload_OtpParameters_OTP_TYPE_HOTP {
@@ -66,7 +49,7 @@ func (op *Payload_OtpParameters) URL() *url.URL {
 	}
 	return &url.URL{
 		Scheme:   "otpauth",
-		Host:     typeString[op.Type],
+		Host:     op.Type.Name(),
 		Path:     op.Name,
 		RawQuery: v.Encode(),
 	}
