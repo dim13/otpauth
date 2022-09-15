@@ -8,8 +8,14 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/dim13/otpauth/migration"
+)
+
+const (
+	cacheFilename = "migration.bin"
+	revFile       = "otpauth-migration.png"
 )
 
 func migrationData(fname, link string) ([]byte, error) {
@@ -27,17 +33,24 @@ func migrationData(fname, link string) ([]byte, error) {
 
 func main() {
 	var (
-		link  = flag.String("link", "", "migration link (required)")
-		cache = flag.String("cache", "migration.bin", "cache file")
-		http  = flag.String("http", "", "serve http (e.g. localhost:6060)")
-		eval  = flag.Bool("eval", false, "evaluate otps")
-		qr    = flag.Bool("qr", false, "generate QR-codes (optauth://)")
-		rev   = flag.Bool("rev", false, "reverse QR-code (otpauth-migration://)")
-		info  = flag.Bool("info", false, "display batch info")
+		link    = flag.String("link", "", "migration link (required)")
+		workdir = flag.String("workdir", "", "working directory")
+		http    = flag.String("http", "", "serve http (e.g. localhost:6060)")
+		eval    = flag.Bool("eval", false, "evaluate otps")
+		qr      = flag.Bool("qr", false, "generate QR-codes (optauth://)")
+		rev     = flag.Bool("rev", false, "reverse QR-code (otpauth-migration://)")
+		info    = flag.Bool("info", false, "display batch info")
 	)
 	flag.Parse()
 
-	data, err := migrationData(*cache, *link)
+	if *workdir != "" {
+		if err := os.MkdirAll(*workdir, 0700); err != nil {
+			log.Fatal("error creating working directory: ", err)
+		}
+	}
+
+	cacheFile := filepath.Join(*workdir, cacheFilename)
+	data, err := migrationData(cacheFile, *link)
 	if err != nil {
 		log.Fatal("-link parameter or cache file missing: ", err)
 	}
@@ -54,12 +67,15 @@ func main() {
 		}
 	case *qr:
 		for _, op := range p.OtpParameters {
-			if err := migration.PNG(op.FileName()+".png", op.URL()); err != nil {
+			fileName := op.FileName() + ".png"
+			qrFile := filepath.Join(*workdir, fileName)
+			if err := migration.PNG(qrFile, op.URL()); err != nil {
 				log.Fatal("write file: ", err)
 			}
 		}
 	case *rev:
-		if err := migration.PNG("otpauth-migration.png", migration.URL(data)); err != nil {
+		revFile := filepath.Join(*workdir, revFile)
+		if err := migration.PNG(revFile, migration.URL(data)); err != nil {
 			log.Fatal(err)
 		}
 	case *eval:
