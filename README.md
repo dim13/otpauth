@@ -15,12 +15,12 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 ### Flags
 
 ```
-  -cache string
-    	cache file (default "migration.bin")
+  -workdir string
+    	working directory to store eventual files (defaults to current one)
   -eval
     	evaluate otps
   -http string
-    	serve http (e.g. localhost:6060)
+    	serve http (e.g. :6060)
   -info
     	display batch info
   -link string
@@ -62,4 +62,27 @@ Will generate:
 ~/go/bin/otpauth -http=localhost:6060 -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
 ```
 
+Navigate to http://localhost:6060/
+
+## Docker
+A Docker container can also be used to run the application by building and running the image as following
+
+#### Build image
+From the current directory run
+```
+docker build . -t otpauth:latest
+```
+
+#### Run container
+To start a container from the previously created image run
+```
+docker run --name otpauth -p 6060:6060 -v $(pwd)/workdir:/app/workdir --rm otpauth:latest -workdir /app/workdir -http :6060 -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
+```
+```
+-p 6060:6060
+Map the host 6060 to the containr 6060
+
+-v $(pwd)/workdir:/app/workdir
+Map the host dir to the containr dir
+```
 Navigate to http://localhost:6060/
