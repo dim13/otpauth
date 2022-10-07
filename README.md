@@ -37,6 +37,17 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 
 ```
 go get github.com/dim13/otpauth
+```
+
+Starting in Go 1.17, installing executables with `go get` is deprecated. `go install` may be used instead:
+
+```
+go install github.com/dim13/otpauth@latest
+```
+
+### Usage
+
+```
 ~/go/bin/otpauth -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
 ```
 
