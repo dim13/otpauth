@@ -1,3 +1,4 @@
+package migration;
 syntax = "proto3";
 
 option go_package = "github.com/dim13/otpauth/migration";
