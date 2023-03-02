@@ -1,8 +1,8 @@
 package migration
 
 import (
-	"io/ioutil"
 	"net/url"
+	"os"
 
 	"github.com/skip2/go-qrcode"
 )
@@ -18,5 +18,5 @@ func PNG(filename string, u *url.URL) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, pic, 0600)
+	return os.WriteFile(filename, pic, 0600)
 }

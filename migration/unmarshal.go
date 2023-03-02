@@ -31,6 +31,7 @@ func Data(link string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(data)
 }
 
+// URL constructs migration URL
 func URL(data []byte) *url.URL {
 	v := make(url.Values)
 	v.Add("data", base64.StdEncoding.EncodeToString(data))
