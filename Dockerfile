@@ -1,14 +1,9 @@
-# Build
-FROM golang:1.18 AS builder
-
+FROM golang:latest AS build
 COPY . /otpauth
 WORKDIR /otpauth
+ENV CGO_ENABLED=0
+RUN go build
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/otpauth
-
-# Run
 FROM scratch
-
-COPY --from=builder /otpauth/build/otpauth /app/otpauth
-
+COPY --from=build /otpauth/otpauth /app/otpauth
 ENTRYPOINT ["/app/otpauth"]
