@@ -33,17 +33,11 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 
 ## Example
 
-**NOTE**: at least [Go](https://golang.org/dl/) 1.16 required, or use latest binary [release](https://github.com/dim13/otpauth/releases/latest).
-
-```
-go get github.com/dim13/otpauth
-```
-
-Starting in Go 1.17, installing executables with `go get` is deprecated. `go install` may be used instead:
-
 ```
 go install github.com/dim13/otpauth@latest
 ```
+
+Or get latest binary [release](https://github.com/dim13/otpauth/releases/latest).
 
 ### Usage
 
