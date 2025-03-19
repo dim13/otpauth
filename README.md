@@ -16,19 +16,25 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 
 ```
   -workdir string
-    	working directory to store eventual files (defaults to current one)
+      working directory to store eventual files (defaults to current one)
   -eval
-    	evaluate otps
+      evaluate otps
   -http string
-    	serve http (e.g. :6060)
+      serve http (e.g. :6060)
   -info
-    	display batch info
+      display batch info
   -link string
-    	migration link (required)
+      migration link (required)
   -qr
-    	generate QR-codes (optauth://)
+      generate QR-codes (optauth://)
   -rev
-    	reverse QR-code (otpauth-migration://)
+      reverse QR-code (otpauth-migration://)
+  -file string
+      input file with otpauth:// URLs (one per line)
+  -migration-batch-img-prefix string
+      prefix for batch QR code filenames (default "batch")
+  -migration-batch-size int
+      number of URLs to include in each batch (default: 7)
 ```
 
 ## Example
@@ -61,6 +67,22 @@ otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
 Will generate:
 
 ![Example](images/example.png)
+
+### Process a File with otpauth URLs
+
+You can also process a file containing multiple otpauth URLs (one per line) and generate QR codes for batches of 10 URLs:
+
+```
+~/go/bin/otpauth -file urls.txt -workdir output -migration-batch-img-prefix batch -migration-batch-size 10
+```
+
+This will:
+1. Read all otpauth:// URLs from the file
+2. Group them in batches of 10
+3. Create migration payloads for each batch
+4. Generate QR codes in the output directory with names like batch_1.png, batch_2.png, etc.
+
+The generated QR codes can be scanned by Google Authenticator to import the accounts in each batch.
 
 ### Serve http
 ```

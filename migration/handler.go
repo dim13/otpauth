@@ -8,5 +8,8 @@ func (op *Payload_OtpParameters) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Write(pic)
+	_, err = w.Write(pic)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
