@@ -12,17 +12,12 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ProcessOtpauthFile reads a file containing otpauth:// URLs (one per line),
-// groups them in batches, creates migration payloads for each batch,
-// and generates QR codes.
 func ProcessOtpauthFile(filePath, workdir, batchPrefix string, batchSize int) error {
-	// Read the file content
 	content, err := os.ReadFile(filePath)
 	if err != nil {
 		return fmt.Errorf("reading input file: %w", err)
 	}
 
-	// Split the content by lines and filter empty lines
 	var urls []string
 	for _, line := range strings.Split(string(content), "\n") {
 		line = strings.TrimSpace(line)
@@ -35,8 +30,7 @@ func ProcessOtpauthFile(filePath, workdir, batchPrefix string, batchSize int) er
 		return fmt.Errorf("no valid otpauth:// URLs found in file")
 	}
 
-	// Process URLs in batches
-	batchCount := (len(urls) + batchSize - 1) / batchSize // Ceiling division
+	batchCount := (len(urls) + batchSize - 1) / batchSize
 
 	fmt.Printf("Found %d otpauth URLs, creating %d batches\n", len(urls), batchCount)
 
@@ -62,14 +56,12 @@ func ProcessOtpauthFile(filePath, workdir, batchPrefix string, batchSize int) er
 			continue
 		}
 
-		// Marshal the payload to protobuf
 		data, err := proto.Marshal(payload)
 		if err != nil {
 			fmt.Printf("Error marshaling payload for batch %d: %v\n", batchIdx+1, err)
 			continue
 		}
 
-		// Create QR code for the batch
 		fileName := fmt.Sprintf("%s_%d.png", batchPrefix, batchIdx+1)
 		filePath := filepath.Join(workdir, fileName)
 		if err := PNG(filePath, URL(data)); err != nil {
@@ -83,7 +75,6 @@ func ProcessOtpauthFile(filePath, workdir, batchPrefix string, batchSize int) er
 			batchIdx+1, filePath, len(payload.OtpParameters))
 	}
 
-	// Print summary
 	fmt.Printf("\n=== SUMMARY ===\n")
 	fmt.Printf("Total URLs found: %d\n", len(urls))
 	fmt.Printf("Valid URLs processed: %d\n", totalProcessedURLs)
@@ -93,18 +84,15 @@ func ProcessOtpauthFile(filePath, workdir, batchPrefix string, batchSize int) er
 	return nil
 }
 
-// CreateMigrationPayload converts a list of otpauth:// URLs into a migration.Payload
-// Returns the payload and any error encountered
 func CreateMigrationPayload(urls []string, batchIndex, batchCount int) (*Payload, error) {
 	payload := &Payload{
 		Version:    1,
 		BatchSize:  int32(batchCount),
 		BatchIndex: int32(batchIndex),
-		BatchId:    1, // Using a default batch ID
+		BatchId:    1,
 	}
 
 	for _, urlStr := range urls {
-		// Parse the otpauth URL
 		u, err := url.Parse(urlStr)
 		if err != nil {
 			fmt.Printf("SKIPPING - Invalid URL format: %s\nError: %v\n", urlStr, err)
@@ -116,7 +104,6 @@ func CreateMigrationPayload(urls []string, batchIndex, batchCount int) (*Payload
 			continue
 		}
 
-		// Extract parameters
 		values := u.Query()
 		secretBase32 := values.Get("secret")
 		if secretBase32 == "" {
@@ -124,26 +111,21 @@ func CreateMigrationPayload(urls []string, batchIndex, batchCount int) (*Payload
 			continue
 		}
 
-		// Add padding if needed (Google Authenticator uses NoPadding)
 		secretBase32 = AddBase32Padding(secretBase32)
 
-		// Try to decode secret from base32
 		secret, err := base32.StdEncoding.DecodeString(secretBase32)
 		if err != nil {
-			// If Base32 decoding fails, use the secret as plain text
 			fmt.Printf("WARNING - Invalid Base32 secret in URL: %s\nError: %v\n", urlStr, err)
 			fmt.Printf("Using secret as plain text instead of Base32-encoded data\n")
-			secret = []byte(secretBase32) // Use the raw string as the secret
+			secret = []byte(secretBase32)
 		}
 
-		// Create OtpParameters
 		param := &Payload_OtpParameters{
 			Secret: secret,
 			Name:   u.Path,
 			Issuer: values.Get("issuer"),
 		}
 
-		// Set algorithm
 		switch strings.ToUpper(values.Get("algorithm")) {
 		case "SHA1", "":
 			param.Algorithm = Payload_OtpParameters_ALGORITHM_SHA1
@@ -157,7 +139,6 @@ func CreateMigrationPayload(urls []string, batchIndex, batchCount int) (*Payload
 			param.Algorithm = Payload_OtpParameters_ALGORITHM_SHA1
 		}
 
-		// Set digit count
 		switch values.Get("digits") {
 		case "6", "":
 			param.Digits = Payload_OtpParameters_DIGIT_COUNT_SIX
@@ -167,7 +148,6 @@ func CreateMigrationPayload(urls []string, batchIndex, batchCount int) (*Payload
 			param.Digits = Payload_OtpParameters_DIGIT_COUNT_SIX
 		}
 
-		// Set OTP type
 		switch u.Host {
 		case "hotp":
 			param.Type = Payload_OtpParameters_OTP_TYPE_HOTP
@@ -179,12 +159,10 @@ func CreateMigrationPayload(urls []string, batchIndex, batchCount int) (*Payload
 			param.Type = Payload_OtpParameters_OTP_TYPE_TOTP
 		}
 
-		// If path starts with a slash, remove it
 		if strings.HasPrefix(param.Name, "/") {
 			param.Name = param.Name[1:]
 		}
 
-		// If name starts with the issuer name followed by a colon, remove it
 		if param.Issuer != "" && strings.HasPrefix(param.Name, param.Issuer+":") {
 			param.Name = param.Name[len(param.Issuer)+1:]
 		}
@@ -195,7 +173,6 @@ func CreateMigrationPayload(urls []string, batchIndex, batchCount int) (*Payload
 	return payload, nil
 }
 
-// AddBase32Padding adds padding to a base32 string if needed
 func AddBase32Padding(s string) string {
 	if len(s)%8 == 0 {
 		return s
