@@ -39,7 +39,7 @@ func main() {
 		qr                      = flag.Bool("qr", false, "generate QR-codes (optauth://)")
 		rev                     = flag.Bool("rev", false, "reverse QR-code (otpauth-migration://)")
 		info                    = flag.Bool("info", false, "display batch info")
-		otpauthUrlsFile         = flag.String("file", "", "input file with otpauth:// URLs (one per line)")
+		otpauthUrlsFile         = flag.String("otpauth-file", "", "input file with otpauth:// URLs (one per line)")
 		migrationBatchImgPrefix = flag.String("migration-batch-img-prefix", "batch", "prefix for batch QR code filenames")
 		migrationBatchSize      = flag.Int("migration-batch-size", 7, "number of URLs to include in each batch (default: 7)")
 	)
