@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	
 	"github.com/dim13/otpauth/migration"
 )
 
@@ -31,19 +30,18 @@ func migrationData(fname, link string) ([]byte, error) {
 	return data, os.WriteFile(fname, data, 0600)
 }
 
-
 func main() {
 	var (
-		link        = flag.String("link", "", "migration link (required)")
-		workdir     = flag.String("workdir", "", "working directory")
-		http        = flag.String("http", "", "serve http (e.g. localhost:6060)")
-		eval        = flag.Bool("eval", false, "evaluate otps")
-		qr          = flag.Bool("qr", false, "generate QR-codes (optauth://)")
-		rev         = flag.Bool("rev", false, "reverse QR-code (otpauth-migration://)")
-		info        = flag.Bool("info", false, "display batch info")
-		inputFile   = flag.String("file", "", "input file with otpauth:// URLs (one per line)")
-		batchPrefix = flag.String("batch-prefix", "batch", "prefix for batch QR code filenames")
-		batchSize   = flag.Int("batch-size", 7, "number of URLs to include in each batch (default: 7)")
+		link                    = flag.String("link", "", "migration link (required)")
+		workdir                 = flag.String("workdir", "", "working directory")
+		http                    = flag.String("http", "", "serve http (e.g. localhost:6060)")
+		eval                    = flag.Bool("eval", false, "evaluate otps")
+		qr                      = flag.Bool("qr", false, "generate QR-codes (optauth://)")
+		rev                     = flag.Bool("rev", false, "reverse QR-code (otpauth-migration://)")
+		info                    = flag.Bool("info", false, "display batch info")
+		otpauthUrlsFile         = flag.String("file", "", "input file with otpauth:// URLs (one per line)")
+		migrationBatchImgPrefix = flag.String("migration-batch-img-prefix", "batch", "prefix for batch QR code filenames")
+		migrationBatchSize      = flag.Int("migration-batch-size", 7, "number of URLs to include in each batch (default: 7)")
 	)
 	flag.Parse()
 
@@ -53,9 +51,8 @@ func main() {
 		}
 	}
 
-	// Handle input file with otpauth URLs
-	if *inputFile != "" {
-		if err := migration.ProcessOtpauthFile(*inputFile, *workdir, *batchPrefix, *batchSize); err != nil {
+	if *otpauthUrlsFile != "" {
+		if err := migration.ProcessOtpauthFile(*otpauthUrlsFile, *workdir, *migrationBatchImgPrefix, *migrationBatchSize); err != nil {
 			log.Fatal("processing input file: ", err)
 		}
 		return
