@@ -29,6 +29,10 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
     	generate QR-codes (optauth://)
   -rev
     	reverse QR-code (otpauth-migration://)
+  -file string
+    	input file with otpauth:// URLs (one per line)
+  -batch-prefix string
+    	prefix for batch QR code filenames (default "batch")
 ```
 
 ## Example
@@ -61,6 +65,22 @@ otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
 Will generate:
 
 ![Example](images/example.png)
+
+### Process a File with otpauth URLs
+
+You can also process a file containing multiple otpauth URLs (one per line) and generate QR codes for batches of 10 URLs:
+
+```
+~/go/bin/otpauth -file urls.txt -workdir output -batch-prefix batch
+```
+
+This will:
+1. Read all otpauth:// URLs from the file
+2. Group them in batches of 10
+3. Create migration payloads for each batch
+4. Generate QR codes in the output directory with names like batch_1.png, batch_2.png, etc.
+
+The generated QR codes can be scanned by Google Authenticator to import the accounts in each batch.
 
 ### Serve http
 ```
