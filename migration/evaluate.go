@@ -32,7 +32,9 @@ func (op *Payload_OtpParameters) Seconds() float64 {
 // Evaluate OTP parameters
 func (op *Payload_OtpParameters) Evaluate() int {
 	h := hmac.New(op.Algorithm.Hash(), op.Secret)
-	binary.Write(h, binary.BigEndian, op.Type.Count(op))
+	if err := binary.Write(h, binary.BigEndian, op.Type.Count(op)); err != nil {
+		return 0
+	}
 	hashed := h.Sum(nil)
 	offset := hashed[h.Size()-1] & 15
 	result := binary.BigEndian.Uint32(hashed[offset:]) & (1<<31 - 1)

@@ -7,6 +7,7 @@
 - Run tests with verbose output: `go test -v ./...`
 - Check code format: `gofmt -l .`
 - Format code: `gofmt -w .`
+- Run linter: `golangci-lint run`
 
 ## Code Style Guidelines
 - Format: Standard Go style (gofmt)

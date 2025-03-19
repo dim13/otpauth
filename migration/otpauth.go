@@ -159,9 +159,7 @@ func CreateMigrationPayload(urls []string, batchIndex, batchCount int) (*Payload
 			param.Type = Payload_OtpParameters_OTP_TYPE_TOTP
 		}
 
-		if strings.HasPrefix(param.Name, "/") {
-			param.Name = param.Name[1:]
-		}
+		param.Name = strings.TrimPrefix(param.Name, "/")
 
 		if param.Issuer != "" && strings.HasPrefix(param.Name, param.Issuer+":") {
 			param.Name = param.Name[len(param.Issuer)+1:]
