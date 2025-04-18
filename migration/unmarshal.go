@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -58,4 +59,8 @@ func UnmarshalURL(link string) (*Payload, error) {
 		return nil, err
 	}
 	return Unmarshal(data)
+}
+
+func (p *Payload) Pretty() string {
+	return prototext.Format(p)
 }

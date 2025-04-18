@@ -40,6 +40,7 @@ func main() {
 		qr      = flag.Bool("qr", false, "generate QR-codes (optauth://)")
 		rev     = flag.Bool("rev", false, "reverse QR-code (otpauth-migration://)")
 		info    = flag.Bool("info", false, "display batch info")
+		dump    = flag.Bool("dump", false, "dump as prototext")
 	)
 	flag.Parse()
 
@@ -87,6 +88,8 @@ func main() {
 		fmt.Println("batch size", p.BatchSize)
 		fmt.Println("batch index", p.BatchIndex)
 		fmt.Println("batch id", p.BatchId)
+	case *dump:
+		fmt.Println(p.Pretty())
 	default:
 		for _, op := range p.OtpParameters {
 			fmt.Println(op.URL())
