@@ -15,12 +15,12 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
 ### Flags
 
 ```
-  -workdir string
-    	working directory to store eventual files (defaults to current one)
+  -dump
+    	dump as prototext
   -eval
     	evaluate otps
   -http string
-    	serve http (e.g. :6060)
+    	serve http (e.g. localhost:6060)
   -info
     	display batch info
   -link string
@@ -29,6 +29,8 @@ to plain [otpauth links](https://github.com/google/google-authenticator/wiki/Key
     	generate QR-codes (optauth://)
   -rev
     	reverse QR-code (otpauth-migration://)
+  -workdir string
+    	working directory
 ```
 
 ## Example
