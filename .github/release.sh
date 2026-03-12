@@ -8,7 +8,8 @@ dist() {
 	go clean
 }
 # see `go tool dist list` for possible target values
-dist "linux/amd64"
+dist "android/arm64"
 dist "darwin/amd64"
 dist "darwin/arm64"
+dist "linux/amd64"
 dist "windows/amd64"
