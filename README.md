@@ -94,6 +94,6 @@ Map the host dir to the containr dir
 ```
 Navigate to http://localhost:6060/
 
-## Other projects
+## Related projects
 
-See also https://github.com/dim13/2fa for simple CLI 2FA evaluator
+See also https://github.com/dim13/2fa for a simple CLI 2FA evaluator.
