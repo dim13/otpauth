@@ -71,20 +71,14 @@ Will generate:
 
 Navigate to http://localhost:6060/
 
-## Docker
-A Docker container can also be used to run the application by building and running the image as following
+## Run as Docker container
+```
+docker run --rm -p 6060:6060 -v $(pwd)/workdir:/app/workdir \
+    ghcr.io/dim13/otpauth:latest \
+    -workdir /app/workdir -http :6060 \
+    -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
+```
 
-#### Build image
-From the current directory run
-```
-docker build . -t otpauth:latest
-```
-
-#### Run container
-To start a container from the previously created image run
-```
-docker run --name otpauth -p 6060:6060 -v $(pwd)/workdir:/app/workdir --rm otpauth:latest -workdir /app/workdir -http :6060 -link "otpauth-migration://offline?data=CjEKCkhlbGxvId6tvu8SGEV4YW1wbGU6YWxpY2VAZ29vZ2xlLmNvbRoHRXhhbXBsZTAC"
-```
 ```
 -p 6060:6060
 Map the host 6060 to the containr 6060
