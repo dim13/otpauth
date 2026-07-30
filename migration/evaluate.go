@@ -20,7 +20,7 @@ func hotp(op *Payload_OtpParameters) uint64 {
 	return op.Counter
 }
 
-func totp(op *Payload_OtpParameters) uint64 {
+func totp() uint64 {
 	return uint64(now().Unix()) / uint64(period.Seconds())
 }
 

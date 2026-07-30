@@ -10,56 +10,65 @@ import (
 
 //go:generate protoc --go_out=. --go_opt=paths=source_relative migration.proto
 
-var algorithmHash = []func() hash.Hash{
-	Payload_OtpParameters_ALGORITHM_UNSPECIFIED: sha1.New,
-	Payload_OtpParameters_ALGORITHM_SHA1:        sha1.New,
-	Payload_OtpParameters_ALGORITHM_SHA256:      sha256.New,
-	Payload_OtpParameters_ALGORITHM_SHA512:      sha512.New,
-	Payload_OtpParameters_ALGORITHM_MD5:         md5.New,
-}
-
 func (x Payload_OtpParameters_Algorithm) Hash() func() hash.Hash {
-	return algorithmHash[x]
-}
-
-var algorithmNames = []string{
-	Payload_OtpParameters_ALGORITHM_UNSPECIFIED: "SHA1",
-	Payload_OtpParameters_ALGORITHM_SHA1:        "SHA1",
-	Payload_OtpParameters_ALGORITHM_SHA256:      "SHA256",
-	Payload_OtpParameters_ALGORITHM_SHA512:      "SHA512",
-	Payload_OtpParameters_ALGORITHM_MD5:         "MD5",
+	switch x {
+	case Payload_OtpParameters_ALGORITHM_SHA1:
+		return sha1.New
+	case Payload_OtpParameters_ALGORITHM_SHA256:
+		return sha256.New
+	case Payload_OtpParameters_ALGORITHM_SHA512:
+		return sha512.New
+	case Payload_OtpParameters_ALGORITHM_MD5:
+		return md5.New
+	default:
+		return sha1.New
+	}
 }
 
 func (x Payload_OtpParameters_Algorithm) Name() string {
-	return algorithmNames[x]
-}
-
-var digitCount = []int{
-	Payload_OtpParameters_DIGIT_COUNT_UNSPECIFIED: 6,
-	Payload_OtpParameters_DIGIT_COUNT_SIX:         6,
-	Payload_OtpParameters_DIGIT_COUNT_EIGHT:       8,
+	switch x {
+	case Payload_OtpParameters_ALGORITHM_SHA1:
+		return "SHA1"
+	case Payload_OtpParameters_ALGORITHM_SHA256:
+		return "SHA256"
+	case Payload_OtpParameters_ALGORITHM_SHA512:
+		return "SHA512"
+	case Payload_OtpParameters_ALGORITHM_MD5:
+		return "MD5"
+	default:
+		return "SHA1"
+	}
 }
 
 func (x Payload_OtpParameters_DigitCount) Count() int {
-	return digitCount[x]
-}
-
-var otpTypeFunc = []func(*Payload_OtpParameters) uint64{
-	Payload_OtpParameters_OTP_TYPE_UNSPECIFIED: totp,
-	Payload_OtpParameters_OTP_TYPE_HOTP:        hotp,
-	Payload_OtpParameters_OTP_TYPE_TOTP:        totp,
+	switch x {
+	case Payload_OtpParameters_DIGIT_COUNT_SIX:
+		return 6
+	case Payload_OtpParameters_DIGIT_COUNT_EIGHT:
+		return 8
+	default:
+		return 6
+	}
 }
 
 func (x Payload_OtpParameters_OtpType) Count(op *Payload_OtpParameters) uint64 {
-	return otpTypeFunc[x](op)
-}
-
-var otpTypeNames = []string{
-	Payload_OtpParameters_OTP_TYPE_UNSPECIFIED: "totp",
-	Payload_OtpParameters_OTP_TYPE_HOTP:        "hotp",
-	Payload_OtpParameters_OTP_TYPE_TOTP:        "totp",
+	switch x {
+	case Payload_OtpParameters_OTP_TYPE_HOTP:
+		return hotp(op)
+	case Payload_OtpParameters_OTP_TYPE_TOTP:
+		return totp()
+	default:
+		return totp()
+	}
 }
 
 func (x Payload_OtpParameters_OtpType) Name() string {
-	return otpTypeNames[x]
+	switch x {
+	case Payload_OtpParameters_OTP_TYPE_HOTP:
+		return "hotp"
+	case Payload_OtpParameters_OTP_TYPE_TOTP:
+		return "totp"
+	default:
+		return "totp"
+	}
 }
