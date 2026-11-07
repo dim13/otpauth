@@ -21,3 +21,30 @@ func TestEvaluate(t *testing.T) {
 		t.Errorf("got %v", res)
 	}
 }
+
+func TestEvaluateMD5(t *testing.T) {
+	// An MD5 digest is 16 bytes, so a truncation offset above 12 leaves
+	// fewer than 4 bytes to read.
+	testCases := []struct {
+		secret byte
+		offset int
+		want   string
+	}{
+		{secret: 1, offset: 1, want: "727980"},
+		{secret: 6, offset: 12, want: "083708"},
+		{secret: 13, offset: 13, want: "909933"},
+		{secret: 0, offset: 14, want: "286446"},
+		{secret: 37, offset: 15, want: "505023"},
+	}
+	for _, tc := range testCases {
+		op := &Payload_OtpParameters{
+			Secret:    []byte{tc.secret, 1, 2, 3},
+			Algorithm: Payload_OtpParameters_ALGORITHM_MD5,
+			Digits:    Payload_OtpParameters_DIGIT_COUNT_SIX,
+			Type:      Payload_OtpParameters_OTP_TYPE_HOTP,
+		}
+		if got := op.EvaluateString(); got != tc.want {
+			t.Errorf("offset %d: got %v, want %v", tc.offset, got, tc.want)
+		}
+	}
+}

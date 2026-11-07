@@ -34,7 +34,9 @@ func (op *Payload_OtpParameters) Evaluate() int {
 	h := hmac.New(op.Algorithm.Hash(), op.Secret)
 	binary.Write(h, binary.BigEndian, op.Type.Count(op))
 	hashed := h.Sum(nil)
-	offset := hashed[h.Size()-1] & 15
+	offset := int(hashed[len(hashed)-1] & 15)
+	// MD5 digest is only 16 bytes long, keep 4 bytes in range
+	offset = min(offset, len(hashed)-4)
 	result := binary.BigEndian.Uint32(hashed[offset:]) & (1<<31 - 1)
 	return int(result) % int(math.Pow10(op.Digits.Count()))
 }
