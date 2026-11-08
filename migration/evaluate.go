@@ -30,16 +30,24 @@ func (op *Payload_OtpParameters) Seconds() float64 {
 }
 
 // Evaluate OTP parameters
-func (op *Payload_OtpParameters) Evaluate() int {
-	h := hmac.New(op.Algorithm.Hash(), op.Secret)
+func (op *Payload_OtpParameters) Evaluate() (int, error) {
+	hf, err := op.Algorithm.Hash()
+	if err != nil {
+		return 0, err
+	}
+	h := hmac.New(hf, op.Secret)
 	binary.Write(h, binary.BigEndian, op.Type.Count(op))
 	hashed := h.Sum(nil)
 	offset := hashed[h.Size()-1] & 15
 	result := binary.BigEndian.Uint32(hashed[offset:]) & (1<<31 - 1)
-	return int(result) % int(math.Pow10(op.Digits.Count()))
+	return int(result) % int(math.Pow10(op.Digits.Count())), nil
 }
 
-// EvaluateString returns OTP as formatted string
+// EvaluateString returns OTP as formatted string, or the error text
 func (op *Payload_OtpParameters) EvaluateString() string {
-	return fmt.Sprintf("%0*d", op.Digits.Count(), op.Evaluate())
+	n, err := op.Evaluate()
+	if err != nil {
+		return err.Error()
+	}
+	return fmt.Sprintf("%0*d", op.Digits.Count(), n)
 }

@@ -1,27 +1,27 @@
 package migration
 
 import (
-	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
+	"errors"
 	"hash"
 )
 
 //go:generate protoc --go_out=. --go_opt=paths=source_relative migration.proto
 
-func (x Payload_OtpParameters_Algorithm) Hash() func() hash.Hash {
+func (x Payload_OtpParameters_Algorithm) Hash() (func() hash.Hash, error) {
 	switch x {
 	case Payload_OtpParameters_ALGORITHM_SHA1:
-		return sha1.New
+		return sha1.New, nil
 	case Payload_OtpParameters_ALGORITHM_SHA256:
-		return sha256.New
+		return sha256.New, nil
 	case Payload_OtpParameters_ALGORITHM_SHA512:
-		return sha512.New
+		return sha512.New, nil
 	case Payload_OtpParameters_ALGORITHM_MD5:
-		return md5.New
+		return nil, errors.ErrUnsupported
 	default:
-		return sha1.New
+		return sha1.New, nil
 	}
 }
 

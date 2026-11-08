@@ -16,7 +16,10 @@ func TestEvaluate(t *testing.T) {
 	if len(p.OtpParameters) < 1 {
 		t.Fatalf("got lengh %v, want 1", len(p.OtpParameters))
 	}
-	res := p.OtpParameters[0].Evaluate()
+	res, err := p.OtpParameters[0].Evaluate()
+	if err != nil {
+		t.Fatal(err)
+	}
 	if res != 528064 {
 		t.Errorf("got %v", res)
 	}

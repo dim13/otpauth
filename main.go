@@ -81,7 +81,12 @@ func main() {
 		}
 	case *eval:
 		for _, op := range p.OtpParameters {
-			fmt.Printf("%06d %s\n", op.Evaluate(), op.Name)
+			n, err := op.Evaluate()
+			if err != nil {
+				log.Println(op.Name+":", err)
+				continue
+			}
+			fmt.Printf("%06d %s\n", n, op.Name)
 		}
 	case *info:
 		fmt.Println("version", p.Version)
